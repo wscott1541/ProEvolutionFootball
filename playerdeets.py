@@ -3,7 +3,7 @@
 """
 Created on Wed May 20 14:18:15 2020
 
-@author: SoapBar
+@author: WS
 """
 
 import random

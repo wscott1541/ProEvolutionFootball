@@ -9,15 +9,14 @@ Created on Thu May 14 11:48:34 2020
 import AmericanFootballFunctionsv5 as AFF
 import random
 import matplotlib.pyplot as plt
-import numpy
-from math import pi, sin, cos
+from math import pi
 
 
 """Gather player details"""
 
 import playerdeets as playerdeets
 
-offense_input = 'Ravens'#input('Would you like to play as the Browns, Bucs or Ravens? ')
+offense_input = input('Would you like to play as the Browns, Bucs or Ravens? ')
 if offense_input == 'Browns':
     offense = playerdeets.browns_offense
 elif offense_input == 'Bucs':
@@ -25,7 +24,7 @@ elif offense_input == 'Bucs':
 elif offense_input == 'Ravens':
     offense = playerdeets.ravens_offense
 else:
-    print('I said "the Browns or the Bucs", moron.')
+    print('I said "the Browns, Bucs or Ravens", moron.')
 
 off_color = offense[0]
 qb = offense[1]
@@ -46,7 +45,7 @@ origin = [25,0,0]
 
 """Gather user inputs"""
 
-wr_rec_input = 'Ingram'#input('Would you like to throw to {} or to {}? '.format(wr_one[0],wr_two[0]))
+wr_rec_input = input('Would you like to throw to {} or to {}? '.format(wr_one[0],wr_two[0]))
 if wr_rec_input == '{}'.format(wr_one[0]):
     wr = wr_one
     decoy = wr_two
@@ -55,8 +54,8 @@ if wr_rec_input == '{}'.format(wr_two[0]):
     decoy = wr_one
 
 #line up the receivers
-wrside = 'L'#input('Would you like {} to line up on the left (L) or right (R)? '.format(wr_rec_input))
-wrecline_input = 8#input('How far in from the sideline would you like {} to line up, on our theoretically 50 yards wide field? '.format(wr[0]))
+wrside = input('Would you like {} to line up on the left (L) or right (R)? '.format(wr_rec_input))
+wrecline_input = input('How far in from the sideline would you like {} to line up, on our theoretically 50 yards wide field? '.format(wr[0]))
 if wrside == 'R':
     wreceiverline = 50 - float(wrecline_input)#50 is the width of the pitch.
 elif wrside == 'L':
@@ -74,21 +73,21 @@ decoy_start = [decoy_line,0]
 decoy.append(decoy_start)
   
 qb_x = origin[0]
-qb_y_input = 1#input('How far behind the O-line would you like the QB to line up? ')
+qb_y_input = input('How far behind the O-line would you like the QB to line up? ')
 qb_y = -float(qb_y_input)
 qb_position = [qb_x,qb_y]
 qb.append(qb_position)
 
-hangle_input = 54#input('At what angle would you like to throw the ball up the pitch? ')
+hangle_input = input('At what angle would you like to throw the ball up the pitch? ')
 hangle = float(hangle_input) * (pi/180)
 
-ballspeed_input = 38#input('How fast would you like to throw the ball? ')
+ballspeed_input = input('How fast would you like to throw the ball? ')
 ballspeed = float(ballspeed_input)
     
-vangle_input = 7#input('What angle would you like to launch the ball at? ')
+vangle_input = input('What angle would you like to launch the ball at? ')
 vangle = (float(vangle_input)) * (pi/180)
 
-holdtime_input = 2#input('How long would you like to hold onto the ball for before releasing? ')
+holdtime_input = input('How long would you like to hold onto the ball for before releasing? ')
 holdtime = float(holdtime_input)
 
 """Define the function"""
