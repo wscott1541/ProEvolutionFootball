@@ -21,7 +21,7 @@ cradius_odell = 0.83185
 height_odell = 5 * 0.3045 + 11 * 0.0254
 jump_odell = 0.98
 name_odell = 'Odell'
-odell = [name_odell,height_odell,wrspeed_odell,acc_odell,cradius_odell,jump_odell]
+odell = [name_odell,height_odell,[wrspeed_odell],acc_odell,cradius_odell,jump_odell]
 
 wrspeed_jarvis = (40 * 0.9144)/4.77
 cradius_jarvis = 31.75 * 0.0254

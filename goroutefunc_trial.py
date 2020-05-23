@@ -17,7 +17,7 @@ from math import pi, sin, cos
 
 import playerdeets as playerdeets
 
-offense_input = 'Ravens'#input('Would you like to play as the Browns, Bucs or Ravens? ')
+offense_input = 'Browns'#input('Would you like to play as the Browns, Bucs or Ravens? ')
 if offense_input == 'Browns':
     offense = playerdeets.browns_offense
 elif offense_input == 'Bucs':
@@ -46,7 +46,7 @@ origin = [25,0,0]
 
 """Gather user inputs"""
 
-wr_rec_input = 'Ingram'#input('Would you like to throw to {} or to {}? '.format(wr_one[0],wr_two[0]))
+wr_rec_input = 'Odell'#input('Would you like to throw to {} or to {}? '.format(wr_one[0],wr_two[0]))
 if wr_rec_input == '{}'.format(wr_one[0]):
     wr = wr_one
     decoy = wr_two
