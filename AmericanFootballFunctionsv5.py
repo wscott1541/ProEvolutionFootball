@@ -297,7 +297,7 @@ def verts(time,wreceiver,direction):
         speed = speed_func(wreceiver,t)
         p_x = vert_x(t,last_val(wreceiver))
         x_vals.append(last_val(p_x))
-        p_y = vert_y(t,speed,last_val(wreceiver),1)
+        p_y = vert_y(t,speed,last_val(wreceiver),direction)
         y_vals.append(last_val(p_y))
         p_z = vert_z(t,wreceiver[1])
         z_vals.append(last_val(p_z))
