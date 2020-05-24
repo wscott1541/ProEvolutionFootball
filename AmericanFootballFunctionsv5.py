@@ -14,6 +14,8 @@ from math import sqrt, atan, cos, sin, pi, tan
 #constants
 gravity = 9.80665
 
+time_interval = 0.01
+
 #def function(input):
 #    output_one = 2 * input
 #    output_two = 3 * input
@@ -26,6 +28,10 @@ gravity = 9.80665
 #hold = 2.5
 #throw_speed = 28
 
+def last_val(a):
+    last = a[(len(a) - 1)]
+    return(last)  
+
 def acc_calc(a,b):
     if a != b:
         acc_one = 2*(10*0.9144) / (a ** 2)
@@ -36,9 +42,21 @@ def acc_calc(a,b):
     acc = (acc_one + acc_two)/2
     return(acc)
     
+def speed_func(runner,time_val):
+    speed = last_val(runner[2]) + runner[3] * time_val
+    if speed > runner[2][0]:
+        speed = runner[2][0]
+    return(speed)
+    
 def forty_speed(a):
     speed = (40 * 0.9144)/a
     return(speed)
+    
+def finalise_deets(runner,time,x_array,y_array):
+    final_pos = [last_val(x_array),last_val(y_array)]
+    runner.append(final_pos)
+    new_speed = speed_func(runner,time)
+    runner[2].append(new_speed)
 
 def quad_one(a,b,c):
     x = (-b - sqrt((b**2) - 4 * a * c))/(2 * a)
@@ -55,11 +73,7 @@ def quad_greater(a,b,c):
         x = one
     elif two > one:
         x = two
-    return(x)
-
-def last_val(a):
-    last = a[(len(a) - 1)]
-    return(last)   
+    return(x) 
 
 def z_populating(height,equivalent):
     length = len(equivalent)
@@ -111,7 +125,7 @@ def snap(origin,qb):
     ballspeed = 15
     abs_y = abs(qb_y)
     snap_distance = sqrt((qb_z ** 2) + (abs_y ** 2))
-    time_total = round((snap_distance / ballspeed),3)
+    time_total = round((snap_distance / ballspeed),2)
     snangle = atan(qb_z/abs_y)
     z_speed = ballspeed * sin(snangle) 
     y_speed = ballspeed * cos(snangle)
@@ -119,9 +133,9 @@ def snap(origin,qb):
     x_vals, y_vals, z_vals = [],[],[]
 
     t_sta = 0
-    t_fin = time_total + 0.001
+    t_fin = time_total + time_interval
 
-    for t in numpy.arange(t_sta,t_fin,0.001):
+    for t in numpy.arange(t_sta,t_fin,time_interval):
         x_vals.append(qb_x)
         y_val = - y_speed * t
         y_vals.append(y_val)
@@ -151,25 +165,25 @@ def time_to_catch(ballspeed,qb_position,h_angle,wr_line,v_angle):
     x_distance = abs(wr_x - qb_x)
     x_speed = ballspeed * cos(h_angle) * cos(v_angle)
     time_a = x_distance / x_speed
-    time_b = round(time_a,3)
+    time_b = round(time_a,2)
     return(time_b)
     
 def time_to_ground(qb,ballspeed,vangle):
     time_a = ((ballspeed * sin(vangle)) / gravity) + sqrt((2*qb[1]/(gravity)) + (((ballspeed * sin(vangle))**2)/(gravity ** 2)))
-    time_b = round(time_a,3)
+    time_b = round(time_a,2)
     return(time_b)
     
 def time_to_out(ballspeed,hangle,vangle,qb_position):
     distance = qb_position[0]
     time_a = distance / ((ballspeed * cos(hangle)) * cos(vangle))
-    time_b = round(time_a,3)
+    time_b = round(time_a,2)
     return(time_b)
 
 def hold_x(time,qbposition):
     x_vals = []
     t_sta = 0
-    t_fin = time + 0.001
-    for t in numpy.arange(t_sta,t_fin,0.001):
+    t_fin = time + time_interval
+    for t in numpy.arange(t_sta,t_fin,time_interval):
         x_val = qbposition[0]
         x_vals.append(x_val)
     return(x_vals)
@@ -177,8 +191,8 @@ def hold_x(time,qbposition):
 def throw_y(ballspeed,time,qb_position,hangle,vangle):
     y_vals = []
     t_sta = 0
-    t_fin = time + 0.001
-    for t in numpy.arange(t_sta,t_fin,0.001):
+    t_fin = time + time_interval
+    for t in numpy.arange(t_sta,t_fin,time_interval):
         y_val = qb_position[1] + ballspeed * sin(hangle) * cos(vangle) * t
         y_vals.append(y_val)
     return(y_vals)
@@ -186,8 +200,8 @@ def throw_y(ballspeed,time,qb_position,hangle,vangle):
 def throw_z(ballspeed,time,qb_height,vangle):
     z_vals = []
     t_sta = 0
-    t_fin = time + 0.001
-    for t in numpy.arange(t_sta,t_fin,0.001):
+    t_fin = time + time_interval
+    for t in numpy.arange(t_sta,t_fin,time_interval):
         z_val = qb_height + ((ballspeed * sin(vangle)) * t - 0.5 * gravity * (t ** 2))
         z_vals.append(z_val)
     return(z_vals)
@@ -199,8 +213,8 @@ def throw_x(ballspeed,time,qb_position,hangle,vangle,wrside):
         direction = -1
     x_vals = []
     t_sta = 0
-    t_fin = time + 0.001
-    for t in numpy.arange(t_sta,t_fin,0.001):
+    t_fin = time + time_interval
+    for t in numpy.arange(t_sta,t_fin,time_interval):
         x_val = qb_position[0] + direction * ballspeed * cos(hangle) * cos(vangle) * t
         x_vals.append(x_val)
     return(x_vals)
@@ -231,15 +245,15 @@ def run_after_catch(x_start,y_start,wrspeed,run_gen):#run_gen can be 1 or 2
         prov_distance = max_x / cos(wrrun_angle)
     if prov_distance * sin(wrrun_angle) > max_y:
         prov_distance = max_y / sin(wrrun_angle)
-    run_time = round(prov_distance/wrspeed,3)
+    run_time = round(prov_distance/wrspeed,2)
     run_x = []
-    t_sta = 0.001
-    t_fin = run_time + 0.001
-    for t in numpy.arange(t_sta,t_fin,0.001):
+    t_sta = time_interval
+    t_fin = run_time + time_interval
+    for t in numpy.arange(t_sta,t_fin,time_interval):
         run_x_val = x_start + run_direc * wrspeed * cos(wrrun_angle) * t
         run_x.append(run_x_val)
     run_y = []
-    for t in numpy.arange(t_sta,t_fin,0.001):
+    for t in numpy.arange(t_sta,t_fin,time_interval):
         run_y_val = y_start + wrspeed * sin(wrrun_angle) * t
         run_y.append(run_y_val)
     distance_run = round(prov_distance * sin(wrrun_angle))
@@ -248,8 +262,8 @@ def run_after_catch(x_start,y_start,wrspeed,run_gen):#run_gen can be 1 or 2
 def vert_y(time,speed,start_position,direction):
     y_vals = []
     t_sta = 0
-    t_fin = time + 0.001
-    for t in numpy.arange(t_sta,t_fin,0.001):
+    t_fin = time + time_interval
+    for t in numpy.arange(t_sta,t_fin,time_interval):
         y_val = start_position[1] + direction * speed * t
         y_vals.append(y_val)
     return(y_vals)
@@ -257,8 +271,8 @@ def vert_y(time,speed,start_position,direction):
 def vert_x(time,start_position):
      x_vals = []
      t_sta = 0
-     t_fin = time + 0.001
-     for t in numpy.arange(t_sta,t_fin,0.001):
+     t_fin = time + time_interval
+     for t in numpy.arange(t_sta,t_fin,time_interval):
          x_val = start_position[0]
          x_vals.append(x_val)
      return(x_vals)
@@ -266,16 +280,33 @@ def vert_x(time,start_position):
 def vert_z(time,height):
      z_vals = []
      t_sta = 0
-     t_fin = time + 0.001
-     for t in numpy.arange(t_sta,t_fin,0.001):
+     t_fin = time + time_interval
+     for t in numpy.arange(t_sta,t_fin,time_interval):
          z_val = height * (2/3)
          z_vals.append(z_val)
      return(z_vals)
 
 def verts(time,wreceiver,direction):
-    x_vals = vert_x(time,last_val(wreceiver))
-    y_vals = vert_y(time,wreceiver[2],last_val(wreceiver),direction)
-    z_vals = vert_z(time,wreceiver[1])
+    t_sta = 0
+    t_fin = time + time_interval
+    x_vals = []
+    y_vals = []
+    z_vals = []
+    
+    for t in numpy.arange(t_sta,t_fin,time_interval):
+        speed = speed_func(wreceiver,t)
+        p_x = vert_x(t,last_val(wreceiver))
+        x_vals.append(last_val(p_x))
+        p_y = vert_y(t,speed,last_val(wreceiver),1)
+        y_vals.append(last_val(p_y))
+        p_z = vert_z(t,wreceiver[1])
+        z_vals.append(last_val(p_z))
+        
+    #fin_speed = speed_func(wreceiver,time)    
+    #wreceiver[2].append(fin_speed)
+    
+    #fin_position = [last_val(x_vals),last_val(y_vals)]
+        
     return(x_vals,y_vals,z_vals)
 
 def run_ball(time,angle,qb,speed,forward,side):
@@ -285,10 +316,10 @@ def run_ball(time,angle,qb,speed,forward,side):
     if side == 'L':
         side_val = -1
     t_sta = 0
-    t_fin = time + 0.001
+    t_fin = time + time_interval
     move_x = []
     move_y = []
-    for t in numpy.arange(t_sta,t_fin,0.001):
+    for t in numpy.arange(t_sta,t_fin,time_interval):
         del_x = qb_position[0] + speed * sin(angle) * t * side_val * forward#these need fixing (maybe part of splitting into two?)
         move_x.append(del_x)
         del_y = qb_position[1] + speed * cos(angle) * t * forward
@@ -333,11 +364,11 @@ def p_to_p(start,objective,speed,height):
     y_vals = []
     z_vals = []
     
-    time = round((distance/speed),3)
+    time = round((distance/speed),2)
     
     t_sta = 0
-    t_fin = time + 0.001
-    for t in numpy.arange(t_sta,t_fin,0.001):
+    t_fin = time + time_interval
+    for t in numpy.arange(t_sta,t_fin,time_interval):
         move_x = start[0] + x_value * x_speed * t
         x_vals.append(move_x)
         move_y = start[1] + y_value * y_speed * t
@@ -361,37 +392,38 @@ def p_to_stop(time,runner,objective):
         y_value = -1
     
     if x_disp == 0:
-        x_speed = 0
+        x_comp = 0
         x_value = 0
-        y_speed = runner[2]
+        y_comp = 1
     elif y_disp == 0:#don't strictly need, but whatever.
-        x_speed = runner[2]
-        y_speed = 0
+        x_comp = 1
+        y_comp = 0
         y_value = 0
     elif x_disp == 0 and y_disp == 0:
-        x_speed = 0
+        x_comp = 0
         x_value = 0
-        y_speed = 0
+        y_comp = 0
         y_value = 0
     else:
         angle = atan(abs(y_disp)/abs(x_disp))
-        x_speed = runner[2] * cos(angle)
-        y_speed = runner[2] * sin(angle)
+        x_comp = cos(angle)
+        y_comp = sin(angle)
     
     x_vals = []
     y_vals = []
     z_vals = []
     
     t_sta = 0
-    t_fin = time + 0.001
-    for t in numpy.arange(t_sta,t_fin,0.001):
-        move_x = x_value * x_speed * t
+    t_fin = time + time_interval
+    for t in numpy.arange(t_sta,t_fin,time_interval):
+        speed = speed_func(runner,t)
+        move_x = x_value * x_comp * speed * t
         new_x = last_val(runner)[0] + move_x
         if abs(move_x) <= abs(x_disp):
             x_vals.append(new_x)
         else:
             x_vals.append(objective[0])
-        move_y = y_value * y_speed * t
+        move_y = y_value * y_comp * speed * t
         new_y = last_val(runner)[1] + move_y
         if abs(move_y) <= abs(y_disp):
             y_vals.append(new_y)
@@ -415,34 +447,34 @@ def lb_rush_blocked(time,linebacker,qb,origin):
         y_value = -1
     
     if x_disp == 0:
-        x_speed = 0
+        x_comp = 0
         x_value = 0
-        y_speed = linebacker[2]
+        y_comp = 1
     elif y_disp == 0:#don't strictly need, but whatever.
-        x_speed = linebacker[2]
-        y_speed = 0
+        x_comp = 1
+        y_comp = 0
         y_value = 0
     elif x_disp == 0 and y_disp == 0:
-        x_speed = 0
+        x_comp = 0
         x_value = 0
-        y_speed = 0
+        y_comp = 0
         y_value = 0
     else:
         angle = atan(abs(y_disp)/abs(x_disp))
-        x_speed = linebacker[2] * cos(angle)
-        y_speed = linebacker[2] * sin(angle)
+        x_comp = cos(angle)
+        y_comp = sin(angle)
     
     x_vals = []
     y_vals = []
     z_vals = []
     
     t_sta = 0
-    t_fin = time + 0.001
-    for t in numpy.arange(t_sta,t_fin,0.001):
-
-        move_x = x_value * x_speed * t
+    t_fin = time + time_interval
+    for t in numpy.arange(t_sta,t_fin,time_interval):
+        speed = speed_func(linebacker,t)
+        move_x = x_value * x_comp * speed * t
         new_x = last_val(linebacker)[0] + move_x
-        move_y = y_value * y_speed * t
+        move_y = y_value * y_comp * speed * t
         new_y = last_val(linebacker)[1] + move_y
         if new_y > origin[2]:
             x_vals.append(new_x)    
@@ -469,33 +501,34 @@ def p_to_p_in_t(time,player,objective):
         y_value = -1
     
     if x_disp == 0:
-        x_speed = 0
+        x_comp = 0
         x_value = 0
-        y_speed = player[2]
+        y_comp = 1
     elif y_disp == 0:#don't strictly need, but whatever.
-        x_speed = player[2]
-        y_speed = 0
+        x_comp = 1
+        y_comp = 0
         y_value = 0
     elif x_disp == 0 and y_disp == 0:
-        x_speed = 0
+        x_comp = 0
         x_value = 0
-        y_speed = 0
+        y_comp = 0
         y_value = 0
     else:
         angle = atan(abs(y_disp)/abs(x_disp))
-        x_speed = player[2] * cos(angle)
-        y_speed = player[2] * sin(angle)
+        x_comp = cos(angle)
+        y_comp = sin(angle)
     
     x_vals = []
     y_vals = []
     z_vals = []
     
     t_sta = 0
-    t_fin = time + 0.001
-    for t in numpy.arange(t_sta,t_fin,0.001):
-        move_x = last_val(player)[0] + x_value * x_speed * t
+    t_fin = time + time_interval
+    for t in numpy.arange(t_sta,t_fin,time_interval):
+        speed = speed_func(player,t)
+        move_x = last_val(player)[0] + x_value * x_comp * speed * t
         x_vals.append(move_x)
-        move_y = last_val(player)[1] + y_value * y_speed * t
+        move_y = last_val(player)[1] + y_value * y_comp * speed * t
         y_vals.append(move_y)
         z_val = player[1] * (2/3)
         z_vals.append(z_val)
@@ -505,7 +538,7 @@ def point_to_chase(time,chaser,chase_arrays):
     t_sta = 0
     t_fin = time
     full_time = []
-    for t in numpy.arange(t_sta,t_fin,0.001):
+    for t in numpy.arange(t_sta,t_fin,time_interval):
         full_time.append(t)
     length = len(full_time)
     chasing_x = [last_val(chaser)[0]]
@@ -525,38 +558,39 @@ def point_to_chase(time,chaser,chase_arrays):
             y_value = -1
         
         if x_disp == 0:
-            x_speed = 0
+            x_comp = 0
             x_value = 0
-            y_speed = chaser[2]
+            y_comp = 1
         elif y_disp == 0:#don't strictly need, but whatever.
-            x_speed = chaser[2]
-            y_speed = 0
+            x_comp = 1
+            y_comp = 0
             y_value = 0
         elif x_disp == 0 and y_disp == 0:
-            x_speed = 0
+            x_comp = 0
             x_value = 0
-            y_speed = 0
+            y_comp = 0
             y_value = 0
         else:
             angle = atan(y_disp/x_disp)
-            x_speed = abs(chaser[2] * cos(angle))
-            y_speed = abs(chaser[2] * sin(angle))
-        move_x = chasing_x[(i - 1)] + x_value * x_speed * 0.001
+            x_comp = abs(cos(angle))
+            y_comp = abs(sin(angle))
+        speed = speed_func(chaser,i*time_interval)
+        move_x = chasing_x[(i - 1)] + x_value * x_comp * speed * time_interval
         chasing_x.append(move_x)
-        move_y = chasing_y[(i - 1)] + y_value * y_speed * 0.001
+        move_y = chasing_y[(i - 1)] + y_value * y_comp * speed * time_interval
         chasing_y.append(move_y)
         z_val = chaser[1] * (2/3)
         chasing_z.append(z_val)
     return(chasing_x,chasing_y,chasing_z)
     
 def point_to_chase_from_t(start,chase_arrays,chaser_speed,start_time,chase_time,height):
-    t_sta = start_time + 0.001
-    t_fin = chase_time + 0.001
+    t_sta = start_time + time_interval
+    t_fin = chase_time + time_interval
     start_time = []
     full_time = []
-    for t in numpy.arange(0,t_sta,0.001):
+    for t in numpy.arange(0,t_sta,time_interval):
         start_time.append(t)
-    for t in numpy.arange(0,t_fin,0.001):
+    for t in numpy.arange(0,t_fin,time_interval):
         full_time.append(t)
     start_length = len(start_time)
     total_length = len(full_time) - start_length
@@ -593,9 +627,9 @@ def point_to_chase_from_t(start,chase_arrays,chaser_speed,start_time,chase_time,
             angle = atan(y_disp/x_disp)
             x_speed = abs(chaser_speed * cos(angle))
             y_speed = abs(chaser_speed * sin(angle))
-        move_x = chasing_x[(i - 1)] + x_value * x_speed * 0.001
+        move_x = chasing_x[(i - 1)] + x_value * x_speed * time_interval
         chasing_x.append(move_x)
-        move_y = chasing_y[(i - 1)] + y_value * y_speed * 0.001
+        move_y = chasing_y[(i - 1)] + y_value * y_speed * time_interval
         chasing_y.append(move_y)
         z_val = height * (2/3)
         chasing_z.append(z_val)
@@ -607,13 +641,13 @@ def static(time,player):
     z_val = player[1] * (2/3)
     
     t_sta = 0
-    t_fin = time + 0.001
+    t_fin = time + time_interval
     
     x_vals = []
     y_vals = []
     z_vals = []
     
-    for t in numpy.arange(t_sta,t_fin,0.001):
+    for t in numpy.arange(t_sta,t_fin,time_interval):
         x_vals.append(x_val)
         y_vals.append(y_val)
         z_vals.append(z_val)
@@ -798,13 +832,16 @@ def def_chase(defender,runner,endzone,pitch_width,pitch_length):
         off_y = last_val(off_ys)
         off_pos = [off_x,off_y]
         
-        def_x_speed,def_y_speed = def_speed_cal(defender[2],def_pos,off_pos,endzone,pitch_width)
-        off_x_speed,off_y_speed = off_speed_cal(runner[2],off_pos,def_pos,endzone,pitch_width)
+        p_def_speed = speed_func(defender,t)
+        p_off_speed = speed_func(runner,t)
         
-        def_x_val = last_val(def_xs) + def_x_speed * 0.001
-        def_y_val = last_val(def_ys) + def_y_speed * 0.001
-        off_x_val = last_val(off_xs) + off_x_speed * 0.001
-        off_y_val = last_val(off_ys) + off_y_speed * 0.001
+        def_x_speed,def_y_speed = def_speed_cal(p_def_speed,def_pos,off_pos,endzone,pitch_width)
+        off_x_speed,off_y_speed = off_speed_cal(p_off_speed,off_pos,def_pos,endzone,pitch_width)
+        
+        def_x_val = last_val(def_xs) + def_x_speed * time_interval
+        def_y_val = last_val(def_ys) + def_y_speed * time_interval
+        off_x_val = last_val(off_xs) + off_x_speed * time_interval
+        off_y_val = last_val(off_ys) + off_y_speed * time_interval
         
         def_xs.append(def_x_val)
         def_ys.append(def_y_val)
@@ -818,9 +855,9 @@ def def_chase(defender,runner,endzone,pitch_width,pitch_length):
         sep =  sqrt((x_sep**2) + (y_sep**2))
         separations.append(sep)
 
-        t += 0.001
+        t += time_interval
         
-    time = round(t,3)
+    time = round(t,2)
     
     def_vals = [def_xs,def_ys,def_zs]
     off_vals = [off_xs,off_ys,off_zs]
@@ -874,9 +911,9 @@ def int_coord_t(start,ball_array):
     x = last_val(xs)
     y = last_val(ys)
     
-    time = len(xs) * 0.001 - 0.001
+    time = len(xs) * time_interval - time_interval
     
-    fin_distance = last_val(distances)
+    #fin_distance = last_val(distances)
     
     return(x,y,time,distances)
     
@@ -890,7 +927,8 @@ def off_catch(wreceiver,ball_arrays):
         x_disp = ball_arrays[0][i] - last_val(wreceiver)[0]
         y_disp = ball_arrays[1][i] - last_val(wreceiver)[1]
         distance = sqrt((x_disp**2) + (y_disp**2))
-        if distance < wreceiver[2] * i * 0.001 + wreceiver[4] and ball_arrays[2][i] < wreceiver[1] + wreceiver[5] and ball_arrays[2][i] < ball_arrays[2][i-1]:
+        speed = speed_func(wreceiver,i*time_interval)
+        if distance < speed * i * time_interval + wreceiver[4] and ball_arrays[2][i] < wreceiver[1] + wreceiver[5] and ball_arrays[2][i] < ball_arrays[2][i-1]:
             catchable = 1
             catchable_is.append(i)
             if ball_arrays[2][i] < wreceiver[1]+wreceiver[4] and ball_arrays[2][i] > 0.3 * wreceiver[1]:
@@ -922,7 +960,8 @@ def def_catch(defender,ball_arrays):
         x_disp = ball_arrays[0][i] - last_val(defender)[0]
         y_disp = ball_arrays[1][i] - last_val(defender)[1]
         distance = sqrt((x_disp**2) + (y_disp**2))
-        if distance < defender[2] * i * 0.001 + defender[4] and ball_arrays[2][i] < defender[1] + defender[5]:
+        speed = speed_func(defender,i*time_interval)
+        if distance < speed * i * time_interval + defender[4] and ball_arrays[2][i] < defender[1] + defender[5]:
             blockable = 1
             blockable_is.append(i)
             if ball_arrays[2][i] < defender[1]+defender[4] and ball_arrays[2][i] > 0.3 * defender[1]:
@@ -980,62 +1019,64 @@ def throw_react(ball_arrays,wreceiver,linebacker,safety):
     
     if block_val == 1 and catch_val == 0:
         if return_val == 1:
-            t = return_min * 0.001
+            t = return_min * time_interval
             coords = [ball_arrays[0][return_min],ball_arrays[1][return_min]]
             cont_val = 1
             possessor = interceptor
         else:
-            t = block_min * 0.001
+            t = block_min * time_interval
             coords = [ball_arrays[0][block_min],ball_arrays[1][block_min]]
             cont_val = 0
     
     if block_val == 0 and catch_val == 1:
         if run_val == 1:
-            t = run_deets[1] * 0.001
+            t = run_deets[1] * time_interval
             coords = [ball_arrays[0][run_deets[1]],ball_arrays[1][run_deets[1]]]
             cont_val = 1
             possessor = wreceiver[0]
         else:
-            t = catch_deets[1] * 0.001
+            t = catch_deets[1] * time_interval
             coords = [ball_arrays[0][catch_deets[1]],ball_arrays[1][catch_deets[1]]]
             cont_val = 0
     
     if block_val == 1 and catch_val == 1:
         if block_min < catch_deets[0]:
             if return_val == 1 and return_min < catch_deets[0]:
-                t = return_min * 0.001
+                t = return_min * time_interval
                 coords = [ball_arrays[0][return_min],ball_arrays[1][return_min]]
                 cont_val = 1
                 possessor = interceptor
             else:
-                t = block_min * 0.001
+                t = block_min * time_interval
                 coords = [ball_arrays[0][block_min],ball_arrays[1][block_min]]
                 cont_val = 0
         else:
             if run_val == 1 and run_deets[1] < block_min:
-                t = run_deets[1] * 0.001
+                t = run_deets[1] * time_interval
                 coords = [ball_arrays[0][run_deets[1]],ball_arrays[1][run_deets[1]]]
                 cont_val = 1
                 possessor = wreceiver[0]
             elif run_val == 1 and run_deets[0] < block_min:
-                t = run_deets[0] * 0.001
+                t = run_deets[0] * time_interval
                 coords = [ball_arrays[0][run_deets[0]],ball_arrays[1][run_deets[0]]]
                 cont_val = 1
                 possessor = wreceiver[0]
             else:
-                t = (block_min - 1)
+                t = (block_min - 1) * time_interval
                 coords = [ball_arrays[0][(block_min - 1)],ball_arrays[1][(block_min - 1)]]
                 cont_val = 0
     
     if catch_val == 0 and block_val == 0:
-        t = len(ball_arrays[0]) * 0.001
+        t = len(ball_arrays[0]) * time_interval
         coords = [last_val(ball_arrays[0]),last_val(ball_arrays[1])]
         cont_val = 0
     
     if cont_val == 0:
         possessor = 'None'
+        
+    time = round(t,2)
     
-    return(t,coords,cont_val,possessor)
+    return(time,coords,cont_val,possessor)
     
 def distance_calc(one,two):
     x_disp = two[0] - one[0]
@@ -1049,7 +1090,7 @@ def player_details(name,height,forty,firstsplit,secondsplit,arm_length,vert_jump
     height = 1.94
     speed = forty_speed(forty)
     acc = acc_calc(firstsplit,secondsplit,)
-    player = [name, height, speed, acc, arm_length, vert_jump]
+    player = [name, height, [speed,0], acc, arm_length, vert_jump]
     return(player)
         
         

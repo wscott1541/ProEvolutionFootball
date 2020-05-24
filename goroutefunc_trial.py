@@ -56,7 +56,7 @@ if wr_rec_input == '{}'.format(wr_two[0]):
 
 #line up the receivers
 wrside = 'L'#input('Would you like {} to line up on the left (L) or right (R)? '.format(wr_rec_input))
-wrecline_input = 8#input('How far in from the sideline would you like {} to line up, on our theoretically 50 yards wide field? '.format(wr[0]))
+wrecline_input = 12#input('How far in from the sideline would you like {} to line up, on our theoretically 50 yards wide field? '.format(wr[0]))
 if wrside == 'R':
     wreceiverline = 50 - float(wrecline_input)#50 is the width of the pitch.
 elif wrside == 'L':
@@ -113,12 +113,10 @@ def func(origin,qb,wreceiver,decoy,wrside,ballspeed,hangle,vangle,thold,lineback
     qb_x, qb_y, qb_z = AFF.static(tsnap,qb)
     
     wr_x, wr_y, wr_z = AFF.verts(tsnap,wreceiver,1)
-    wr_snap_final = [AFF.last_val(wr_x),AFF.last_val(wr_y)]
-    wreceiver.append(wr_snap_final)
+    AFF.finalise_deets(wreceiver,tsnap,wr_x,wr_y)
     
     decoy_x, decoy_y, decoy_z = AFF.verts(tsnap,decoy,1)
-    decoy_snap_final = [AFF.last_val(decoy_x),AFF.last_val(decoy_y)]
-    decoy.append(decoy_snap_final)
+    AFF.finalise_deets(decoy,tsnap,decoy_x,decoy_y)
     
     lb_direction = random.randint(0,2)#runs at qb=0,left=1, right=2
     
@@ -133,8 +131,7 @@ def func(origin,qb,wreceiver,decoy,wrside,ballspeed,hangle,vangle,thold,lineback
             lb_x, lb_y, lb_z = AFF.p_to_stop(tsnap,linebacker,[5,AFF.last_val(linebacker)[1]])
         if lb_direction == 2:
             lb_x, lb_y, lb_z = AFF.p_to_stop(tsnap,linebacker,[45,AFF.last_val(linebacker)[1]])
-    lb_snap_final = [AFF.last_val(lb_x),AFF.last_val(lb_y)]
-    linebacker.append(lb_snap_final)
+    AFF.finalise_deets(linebacker,tsnap,lb_x,lb_y)
     
     if lb_direction == 0:
         s_rand = random.randint(0,1)
@@ -182,29 +179,25 @@ def func(origin,qb,wreceiver,decoy,wrside,ballspeed,hangle,vangle,thold,lineback
     qb_x = AFF.join_two(qb_x,qb_hold_x)
     qb_y = AFF.join_two(qb_y,qb_hold_y)
     qb_z = AFF.join_two(qb_z,qb_hold_z)
-    qb_hold_final = [AFF.last_val(qb_x),AFF.last_val(qb_y)]
-    qb.append(qb_hold_final)
+    AFF.finalise_deets(qb,thold,qb_x,qb_y)
     holds = [qb_x, qb_y, qb_z]
         
     lb_x = AFF.join_two(lb_x,lb_x_hold)
     lb_y = AFF.join_two(lb_y,lb_y_hold)
     lb_z = AFF.join_two(lb_z,lb_z_hold)
-    lb_hold_final = [AFF.last_val(lb_x),AFF.last_val(lb_y)]
-    linebacker.append(lb_hold_final)
+    AFF.finalise_deets(linebacker,thold,lb_z,lb_y)
     
     wr_hold_x, wr_hold_y, wr_hold_z = AFF.verts(thold,wreceiver,1)
     wr_x = AFF.join_two(wr_x,wr_hold_x)
     wr_y = AFF.join_two(wr_y,wr_hold_y)
     wr_z = AFF.join_two(wr_z,wr_hold_z)
-    wr_hold_final = [AFF.last_val(wr_x),AFF.last_val(wr_y)]
-    wreceiver.append(wr_hold_final)
+    AFF.finalise_deets(wreceiver,thold,wr_x,wr_y)
     
     decoy_hold_x, decoy_hold_y, decoy_hold_z = AFF.verts(thold,decoy,1)
     decoy_x = AFF.join_two(decoy_x,decoy_hold_x)
     decoy_y = AFF.join_two(decoy_y,decoy_hold_y)
     decoy_z = AFF.join_two(decoy_z,decoy_hold_z)
-    decoy_hold_final = [AFF.last_val(decoy_x),AFF.last_val(decoy_y)]
-    decoy.append(decoy_hold_final)
+    AFF.finalise_deets(decoy,thold,decoy_x,decoy_y)
     
     s_x, s_y, s_z = AFF.static(thold,safety)
     
@@ -214,7 +207,7 @@ def func(origin,qb,wreceiver,decoy,wrside,ballspeed,hangle,vangle,thold,lineback
     
         p_throw_x, p_throw_y, p_throw_z = AFF.throws(tground,ballspeed,qb,hangle,vangle,wrside)
         p_ball = [p_throw_x, p_throw_y, p_throw_z]
-    
+        
         tthrow,t_end,cont_val,possessor = AFF.throw_react(p_ball,wreceiver,linebacker,safety)
         #can use the t_end for distance thrown
         throw_x, throw_y, throw_z = AFF.throws(tthrow,ballspeed,qb,hangle,vangle,wrside)
@@ -224,29 +217,25 @@ def func(origin,qb,wreceiver,decoy,wrside,ballspeed,hangle,vangle,thold,lineback
         wr_x = AFF.join_two(wr_x,wr_t_x)
         wr_y = AFF.join_two(wr_y,wr_t_y)
         wr_z = AFF.join_two(wr_z,wr_t_z)
-        wr_t_final = [AFF.last_val(wr_x),AFF.last_val(wr_y)]
-        wreceiver.append(wr_t_final)
+        AFF.finalise_deets(wreceiver,tthrow,wr_x,wr_y)
         
         decoy_t_x, decoy_t_y, decoy_t_z = AFF.verts(tthrow,decoy,1)
         decoy_x = AFF.join_two(decoy_x,decoy_t_x)
         decoy_y = AFF.join_two(decoy_y,decoy_t_y)
         decoy_z = AFF.join_two(decoy_z,decoy_t_z)
-        decoy_t_final = [AFF.last_val(decoy_x),AFF.last_val(decoy_y)]
-        decoy.append(decoy_t_final)
+        AFF.finalise_deets(decoy,tthrow,decoy_x,decoy_y)
     
         lb_t_x, lb_t_y, lb_t_z = AFF.p_to_p_in_t(tthrow,linebacker,t_end)
         lb_x = AFF.join_two(lb_x,lb_t_x)
         lb_y = AFF.join_two(lb_y,lb_t_y)
         lb_z = AFF.join_two(lb_z,lb_t_z)
-        lb_t_final = [AFF.last_val(lb_x),AFF.last_val(lb_y)]
-        linebacker.append(lb_t_final)
+        AFF.finalise_deets(linebacker,tthrow,lb_x,lb_y)
         
         s_t_x, s_t_y, s_t_z = AFF.p_to_p_in_t(tthrow,safety,t_end)
         s_x = AFF.join_two(s_x,s_t_x)
         s_y = AFF.join_two(s_y,s_t_y)
         s_z = AFF.join_two(s_z,s_t_z)
-        s_t_final = [AFF.last_val(s_x),AFF.last_val(s_y)]
-        safety.append(s_t_final)
+        AFF.finalise_deets(safety,tthrow,s_x,s_y)
         
     """POST-THROW"""
     
@@ -260,9 +249,9 @@ def func(origin,qb,wreceiver,decoy,wrside,ballspeed,hangle,vangle,thold,lineback
                 lb_racs = [lb_rac_x,lb_rac_y,lb_rac_z]
                 
             if AFF.distance_calc(AFF.last_val(linebacker),AFF.last_val(wreceiver)) < AFF.distance_calc(AFF.last_val(safety),AFF.last_val(wreceiver)):
-                trac,lb_racs,wreceiver_racs = AFF.def_chase(safety,wreceiver,100,50,100)
+                trac,lb_racs,wreceiver_racs = AFF.def_chase(linebacker,wreceiver,100,50,100)
                 
-                s_rac_x,s_rac_y,s_rac_z = AFF.point_to_chase(trac,linebacker,wreceiver_racs)
+                s_rac_x,s_rac_y,s_rac_z = AFF.point_to_chase(trac,safety,wreceiver_racs)
                 safety_racs = [s_rac_x,s_rac_y,s_rac_z]
                 
             decoy_rac_x, decoy_rac_y,decoy_rac_z = AFF.point_to_chase(trac,decoy,wreceiver_racs)
@@ -302,11 +291,15 @@ def func(origin,qb,wreceiver,decoy,wrside,ballspeed,hangle,vangle,thold,lineback
         
     safetys = [s_x, s_y, s_z]
     
-    return(snaps,holds,throws,wrs,decoys,lbs,safetys)
+    times = [tsnap,thold,tthrow]
+    if cont_val == 1:
+        times.append(trac)
+    
+    return(snaps,holds,throws,wrs,decoys,lbs,safetys,times)
 
 """Run the function"""
 
-snaps,holds,throws,wrs,decoys,lbs,safetys = func(origin,qb,wr,decoy,wrside,ballspeed,hangle,vangle,holdtime,linebacker,safety)
+snaps,holds,throws,wrs,decoys,lbs,safetys,times = func(origin,qb,wr,decoy,wrside,ballspeed,hangle,vangle,holdtime,linebacker,safety)
 #func(origin,qb,wreceiver,decoy,target,wrside,ballspeed,vangle,thold,linebacker,safety)
 
 """Process the outputs"""
@@ -351,4 +344,4 @@ plt.show()
 plt.plot(test[2][0],test[2][1])
 """
 
-
+print(times)
