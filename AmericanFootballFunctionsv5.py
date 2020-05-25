@@ -758,7 +758,7 @@ def off_speed_cal(off_speed,off_pos,def_pos,endzone,pitch_width):
         y_val = -1
     
     if pitch_width - off_pos[0] < 0.5 or off_pos[0] < 0.5:
-        if abs(x_disp) < 1.25:
+        if abs(x_disp) < 1.25 and y_disp:
             x_speed = 0
             y_speed = off_speed * y_val
         else:
@@ -767,7 +767,13 @@ def off_speed_cal(off_speed,off_pos,def_pos,endzone,pitch_width):
             else:
                 x_val = -1
             
-    if abs(endzone - off_pos[1]) > abs(endzone - def_pos[1]): 
+    if abs(endzone - off_pos[1]) > abs(endzone - def_pos[1]):#defender closer to endzone 
+        if pitch_width - off_pos[0] < 0.5 or off_pos[0] < 0.5 and abs(y_disp) < 3:
+            if off_pos[0] < 0.5:
+                x_val = 1
+            else:
+                x_val = -1
+            
         if x_disp == 0:
             x_speed = off_speed * cos(30 * pi/180) * x_val
             y_speed = off_speed * sin(30 * pi/180) * y_val
@@ -783,8 +789,11 @@ def off_speed_cal(off_speed,off_pos,def_pos,endzone,pitch_width):
                 x_speed = off_speed * cos(45 * pi/180) * x_val
                 y_speed = off_speed * sin(45 * pi/180) * y_val
     
-    if abs(endzone - off_pos[1]) <= abs(endzone - def_pos[1]):
-        if x_disp == 0:
+    if abs(endzone - off_pos[1]) <= abs(endzone - def_pos[1]):#offense closer to endzone
+        if pitch_width - off_pos[0] < 0.5 or off_pos[0] < 0.5:
+            x_speed = 0
+            y_speed = off_speed * y_val
+        elif x_disp == 0:
             x_speed = 0
             y_speed = off_speed * y_val
         else:
@@ -803,7 +812,6 @@ def off_speed_cal(off_speed,off_pos,def_pos,endzone,pitch_width):
     if separation > 20 or abs(off_pos[1] - endzone) < 3:
         x_speed = 0
         y_speed = off_speed * y_val
-        
     
     return(x_speed,y_speed)
 
