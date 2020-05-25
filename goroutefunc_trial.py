@@ -180,12 +180,12 @@ def func(origin,qb,wreceiver,decoy,wrside,ballspeed,hangle,vangle,thold,lineback
     qb_y = AFF.join_two(qb_y,qb_hold_y)
     qb_z = AFF.join_two(qb_z,qb_hold_z)
     AFF.finalise_deets(qb,thold,qb_x,qb_y)
-    holds = [qb_x, qb_y, qb_z]
+    holds = [qb_hold_x, qb_hold_y, qb_hold_z]
         
     lb_x = AFF.join_two(lb_x,lb_x_hold)
     lb_y = AFF.join_two(lb_y,lb_y_hold)
     lb_z = AFF.join_two(lb_z,lb_z_hold)
-    AFF.finalise_deets(linebacker,thold,lb_z,lb_y)
+    AFF.finalise_deets(linebacker,thold,lb_x,lb_y)
     
     wr_hold_x, wr_hold_y, wr_hold_z = AFF.verts(thold,wreceiver,1)
     wr_x = AFF.join_two(wr_x,wr_hold_x)
@@ -335,13 +335,5 @@ if len(throws[0]) > 1:
     plt.plot(throws[1],throws[2],color='orange')
 plt.ylim([0,4])
 plt.show()
-
-
-"""
-plt.plot(test[1][0],test[1][1])
-plt.plot(lbs[0],lbs[1])
-plt.show()
-plt.plot(test[2][0],test[2][1])
-"""
 
 print(times)
