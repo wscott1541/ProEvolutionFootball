@@ -732,7 +732,7 @@ def def_speed_cal(def_speed,def_pos,off_pos,endzone,pitch_width):
     if abs(endzone - def_pos[1]) < 0.5:
         x_speed, y_speed = def_to_man(def_speed,def_pos,off_pos)
     
-    if  pitch_width - def_pos[0] < 0.75 or def_pos[0] < 0.75:
+    if  pitch_width - def_pos[0] < 1 or def_pos[0] < 1:
         x_speed, y_speed = def_to_man(def_speed,def_pos,off_pos)
     
     separation = sqrt((x_disp**2) + (y_disp**2))
@@ -815,8 +815,8 @@ def off_speed_cal(off_speed,off_pos,def_pos,endzone,pitch_width):
     if pitch_width - off_pos[0] < 0.75 or off_pos[0] < 0.75:
         if abs(endzone - off_pos[1]) > abs(endzone - def_pos[1]):
             if abs(x_disp) < 0.25:
-                x_speed = off_speed * cos(45 * pi/180) * x_val
-                y_speed = off_speed * sin(45 * pi/180) * y_val
+                x_speed = 0.5 * off_speed * cos(45 * pi/180) * x_val
+                y_speed = 0.5 * off_speed * sin(45 * pi/180) * y_val
                 if pitch_width - off_pos[0] < 0.5 or off_pos[0] < 0.55:
                     x_speed = off_speed * cos(45 * pi/180) * - x_val
                     y_speed = off_speed * sin(45 * pi/180) * y_val    
