@@ -14,7 +14,7 @@ from math import sqrt, atan, cos, sin, pi, tan
 #constants
 gravity = 9.80665
 
-time_interval = 0.001
+time_interval = 0.01
 
 #def function(input):
 #    output_one = 2 * input
@@ -127,7 +127,7 @@ def snap(origin,qb):
     ballspeed = 15
     abs_y = abs(qb_y)
     snap_distance = sqrt((qb_z ** 2) + (abs_y ** 2))
-    time_total = round((snap_distance / ballspeed),3)
+    time_total = round((snap_distance / ballspeed),2)
     snangle = atan(qb_z/abs_y)
     z_speed = ballspeed * sin(snangle) 
     y_speed = ballspeed * cos(snangle)
@@ -167,18 +167,22 @@ def time_to_catch(ballspeed,qb_position,h_angle,wr_line,v_angle):
     x_distance = abs(wr_x - qb_x)
     x_speed = ballspeed * cos(h_angle) * cos(v_angle)
     time_a = x_distance / x_speed
-    time_b = round(time_a,3)
+    time_b = round(time_a,2)
     return(time_b)
     
 def time_to_ground(qb,ballspeed,vangle):
-    time_a = ((ballspeed * sin(vangle)) / gravity) + sqrt((2*qb[1]/(gravity)) + (((ballspeed * sin(vangle))**2)/(gravity ** 2)))
-    time_b = round(time_a,3)
+    a = -gravity/2
+    b = ballspeed * sin(vangle)
+    c = qb[1]
+    time_a = quad_greater(a,b,c)
+    #((ballspeed * sin(vangle)) / gravity) + sqrt((2*qb[1]/(gravity)) + (((ballspeed * sin(vangle))**2)/(gravity ** 2)))
+    time_b = round(time_a,2)
     return(time_b)
     
 def time_to_out(ballspeed,hangle,vangle,qb_position):
     distance = qb_position[0]
     time_a = distance / ((ballspeed * cos(hangle)) * cos(vangle))
-    time_b = round(time_a,3)
+    time_b = round(time_a,2)
     return(time_b)
 
 def hold_x(time,qbposition):
@@ -236,7 +240,7 @@ def run_after_catch(x_start,y_start,wrspeed,run_gen):#run_gen can be 1 or 2
     max_distance = sqrt((max_y ** 2) + (max_x ** 2))
     prov_distance = random.random() * max_distance
     wrrun_angle = (random.randint(0,100))/100
-    wrrun_side = random.randint(0,1)
+    wrrun_side = random.randint(0,2)
     if wrrun_side == 0:
         run_direc = -1
         max_x = x_start
@@ -247,7 +251,7 @@ def run_after_catch(x_start,y_start,wrspeed,run_gen):#run_gen can be 1 or 2
         prov_distance = max_x / cos(wrrun_angle)
     if prov_distance * sin(wrrun_angle) > max_y:
         prov_distance = max_y / sin(wrrun_angle)
-    run_time = round(prov_distance/wrspeed,3)
+    run_time = round(prov_distance/wrspeed,2)
     run_x = []
     t_sta = time_interval
     t_fin = run_time + time_interval
@@ -366,7 +370,7 @@ def p_to_p(start,objective,speed,height):
     y_vals = []
     z_vals = []
     
-    time = round((distance/speed),3)
+    time = round((distance/speed),2)
     
     t_sta = 0
     t_fin = time + time_interval
@@ -867,7 +871,7 @@ def def_chase(defender,runner,endzone,pitch_width,pitch_length):
 
         t += time_interval
         
-    time = round(t,3)
+    time = round(t,2)
     
     def_vals = [def_xs,def_ys,def_zs]
     off_vals = [off_xs,off_ys,off_zs]
@@ -1084,7 +1088,7 @@ def throw_react(ball_arrays,wreceiver,linebacker,safety):
     if cont_val == 0:
         possessor = 'None'
         
-    time = round(t,3)
+    time = round(t,2)
     
     return(time,coords,cont_val,possessor)
     
