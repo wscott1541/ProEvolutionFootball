@@ -9,15 +9,14 @@ Created on Thu May 14 11:48:34 2020
 import AmericanFootballFunctionsv5 as AFF
 import random
 import matplotlib.pyplot as plt
-import numpy
-from math import pi, sin, cos
+from math import pi
 
 
 """Gather player details"""
 
 import playerdeets as playerdeets
 
-offense_input = 'Browns'#input('Would you like to play as the Browns, Bucs or Ravens? ')
+offense_input = 'Ravens'#input('Would you like to play as the Browns, Bucs or Ravens? ')
 if offense_input == 'Browns':
     offense = playerdeets.browns_offense
 elif offense_input == 'Bucs':
@@ -25,7 +24,7 @@ elif offense_input == 'Bucs':
 elif offense_input == 'Ravens':
     offense = playerdeets.ravens_offense
 else:
-    print('I said "the Browns or the Bucs", moron.')
+    print('I said "the Browns, Bucs or Ravens", moron.')
 
 off_color = offense[0]
 qb = offense[1]
@@ -46,7 +45,7 @@ origin = [25,0,0]
 
 """Gather user inputs"""
 
-wr_rec_input = 'Odell'#input('Would you like to throw to {} or to {}? '.format(wr_one[0],wr_two[0]))
+wr_rec_input = 'Ingram'#input('Would you like to throw to {} or to {}? '.format(wr_one[0],wr_two[0]))
 if wr_rec_input == '{}'.format(wr_one[0]):
     wr = wr_one
     decoy = wr_two
@@ -243,13 +242,16 @@ def func(origin,qb,wreceiver,decoy,wrside,ballspeed,hangle,vangle,thold,lineback
     if cont_val == 1:
         
         if possessor == wreceiver[0]:#i.e., the ball was caught by the wide receiver
-            if AFF.distance_calc(AFF.last_val(safety),AFF.last_val(wreceiver)) < AFF.distance_calc(AFF.last_val(linebacker),AFF.last_val(wreceiver)):
+            p_trac,p_safety_racs,p_wr_racs = AFF.def_chase(safety,wreceiver,100,50,100)
+            p_trac,p_lb_racs,p_wr_racs = AFF.def_chase(linebacker,wreceiver,100,50,100)
+            
+            if AFF.last_val(p_safety_racs[1]) < AFF.last_val(p_lb_racs[1]):
                 trac,safety_racs,wreceiver_racs = AFF.def_chase(safety,wreceiver,100,50,100)
                 
                 lb_rac_x,lb_rac_y,lb_rac_z = AFF.point_to_chase(trac,linebacker,wreceiver_racs)
                 lb_racs = [lb_rac_x,lb_rac_y,lb_rac_z]
                 
-            if AFF.distance_calc(AFF.last_val(linebacker),AFF.last_val(wreceiver)) < AFF.distance_calc(AFF.last_val(safety),AFF.last_val(wreceiver)):
+            if AFF.last_val(p_lb_racs[1]) < AFF.last_val(p_safety_racs[1]):
                 trac,lb_racs,wreceiver_racs = AFF.def_chase(linebacker,wreceiver,100,50,100)
                 
                 s_rac_x,s_rac_y,s_rac_z = AFF.point_to_chase(trac,safety,wreceiver_racs)
@@ -310,14 +312,21 @@ plt.rcParams['axes.facecolor'] = 'green'
     
 #plot throw and wr run
 plt.plot(snaps[0],snaps[1],color='orange')
+plt.scatter(wrs[0][0],wrs[1][0],color=off_color)
 plt.plot(wrs[0],wrs[1],color=off_color)
+
+plt.scatter(decoys[0][0],decoys[1][0],color=off_color)
 plt.plot(decoys[0],decoys[1],color=off_color)
+
+plt.scatter(holds[0][0],holds[1][0],color=off_color)
 plt.plot(holds[0],holds[1],color=off_color)
 if len(throws[0]) > 1:
     plt.plot(throws[0],throws[1],color='orange')
 
 #plot defense
+plt.scatter(lbs[0][0],lbs[1][0],color=def_color)
 plt.plot(lbs[0],lbs[1],color=def_color)
+plt.scatter(safetys[0][0],safetys[1][0],color=def_color)
 plt.plot(safetys[0],safetys[1],color=def_color)
 
 #plot offensive line
