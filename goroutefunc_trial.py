@@ -213,7 +213,7 @@ def func(origin,qb,wreceiver,decoy,wrside,ballspeed,hangle,vangle,thold,lineback
         throw_x, throw_y, throw_z = AFF.throws(tthrow,ballspeed,qb,hangle,vangle,wrside)
         throws = [throw_x,throw_y,throw_z]
         
-        wr_t_x, wr_t_y, wr_t_z = AFF.p_to_p_in_t(tthrow,wreceiver,t_end)
+        wr_t_x, wr_t_y, wr_t_z = AFF.p_to_stop(tthrow,wreceiver,t_end)
         wr_x = AFF.join_two(wr_x,wr_t_x)
         wr_y = AFF.join_two(wr_y,wr_t_y)
         wr_z = AFF.join_two(wr_z,wr_t_z)
@@ -225,13 +225,14 @@ def func(origin,qb,wreceiver,decoy,wrside,ballspeed,hangle,vangle,thold,lineback
         decoy_z = AFF.join_two(decoy_z,decoy_t_z)
         AFF.finalise_deets(decoy,tthrow,decoy_x,decoy_y)
     
-        lb_t_x, lb_t_y, lb_t_z = AFF.p_to_p_in_t(tthrow,linebacker,t_end)
-        lb_x = AFF.join_two(lb_x,lb_t_x)
-        lb_y = AFF.join_two(lb_y,lb_t_y)
-        lb_z = AFF.join_two(lb_z,lb_t_z)
-        AFF.finalise_deets(linebacker,tthrow,lb_x,lb_y)
+        if lb_direction != 0:
+            lb_t_x, lb_t_y, lb_t_z = AFF.p_to_stop(tthrow,linebacker,t_end)
+            lb_x = AFF.join_two(lb_x,lb_t_x)
+            lb_y = AFF.join_two(lb_y,lb_t_y)
+            lb_z = AFF.join_two(lb_z,lb_t_z)
+            AFF.finalise_deets(linebacker,tthrow,lb_x,lb_y)
         
-        s_t_x, s_t_y, s_t_z = AFF.p_to_p_in_t(tthrow,safety,t_end)
+        s_t_x, s_t_y, s_t_z = AFF.p_to_stop(tthrow,safety,t_end)
         s_x = AFF.join_two(s_x,s_t_x)
         s_y = AFF.join_two(s_y,s_t_y)
         s_z = AFF.join_two(s_z,s_t_z)
