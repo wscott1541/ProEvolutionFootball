@@ -64,8 +64,13 @@ cowboys_defense = ['blue',vander,haha]
 
 """Baltimore Ravens"""
 
-lamar = AFF.player_details('Lamar',1.89,4.34,4.34,4.34,0.84,0.75)
+lamar_height = 1.89
+lamar_speed = [0.5,0.5]
+lamar_acc = 0
+lamar_name = 'Lamar'
+prov_lamar = [lamar_name,lamar_height,lamar_speed,lamar_acc]
+#AFF.player_details('Lamar',1.89,4.34,4.34,4.34,0.84,0.75)
 ingram = AFF.player_details('Ingram',1.76,4.53,1.54,2.58,0.78,0.8)
 marquise = AFF.player_details('Hollywood',1.76,4.34,4.34,4.34,0.8,0.8)
-ravens_offense = ['purple',lamar,ingram,marquise,'Nah']
+ravens_offense = ['purple',prov_lamar,ingram,marquise,'Nah']
 
