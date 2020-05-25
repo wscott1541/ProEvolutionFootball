@@ -1123,6 +1123,67 @@ def player_details(name,height,forty,firstsplit,secondsplit,arm_length,vert_jump
     acc = acc_calc(firstsplit,secondsplit,)
     player = [name, height, [speed,0], acc, arm_length, vert_jump]
     return(player)
+    
+def slant_to_vert(time,runner,turn):
+    x_disp = turn[0] - last_val(runner)[0]
+    y_disp = turn[1] - last_val(runner)[1]
+    
+    if x_disp > 0:
+        x_value = 1
+    if x_disp < 0:
+        x_value = -1
+    if y_disp > 0:
+        y_value = 1
+    if y_disp < 0:
+        y_value = -1
+    
+    if x_disp == 0:
+        x_comp = 0
+        x_value = 0
+        y_comp = 1
+    elif y_disp == 0:#don't strictly need, but whatever.
+        x_comp = 1
+        y_comp = 0
+        y_value = 0
+    elif x_disp == 0 and y_disp == 0:
+        x_comp = 0
+        x_value = 0
+        y_comp = 0
+        y_value = 0
+    else:
+        angle = atan(abs(y_disp)/abs(x_disp))
+        x_comp = cos(angle)
+        y_comp = sin(angle)
+    
+    x_vals = []
+    y_vals = []
+    z_vals = []
+    
+    slant_times = []
+    
+    t_sta = 0
+    t_fin = time + time_interval
+    for t in numpy.arange(t_sta,t_fin,time_interval):
+        speed = speed_func(runner,t)
+        move_x = x_value * x_comp * speed * t
+        new_x = last_val(runner)[0] + move_x
+        if abs(move_x) <= abs(x_disp):
+            x_vals.append(new_x)
+            slant_times.append(t)
+        else:
+            x_val = vert_x(t-last_val(slant_times),turn)
+            x_vals.append(x_val)
+        move_y = y_value * y_comp * speed * t
+        new_y = last_val(runner)[1] + move_y
+        if abs(move_y) <= abs(y_disp):
+            y_vals.append(new_y)
+        else:
+            y_val = vert_y(t-last_val(slant_times),speed,turn,1)
+            y_vals.append(y_val)
+        z_val = runner[1] * (2/3)
+        z_vals.append(z_val)
+    return(x_vals,y_vals,z_vals)
+    
         
         
         
