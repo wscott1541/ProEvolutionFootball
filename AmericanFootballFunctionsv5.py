@@ -14,7 +14,7 @@ from math import sqrt, atan, cos, sin, pi, tan
 #constants
 gravity = 9.80665
 
-time_interval = 0.01
+time_interval = 0.001
 
 #def function(input):
 #    output_one = 2 * input
@@ -127,7 +127,7 @@ def snap(origin,qb):
     ballspeed = 15
     abs_y = abs(qb_y)
     snap_distance = sqrt((qb_z ** 2) + (abs_y ** 2))
-    time_total = round((snap_distance / ballspeed),2)
+    time_total = round((snap_distance / ballspeed),3)
     snangle = atan(qb_z/abs_y)
     z_speed = ballspeed * sin(snangle) 
     y_speed = ballspeed * cos(snangle)
@@ -167,7 +167,7 @@ def time_to_catch(ballspeed,qb_position,h_angle,wr_line,v_angle):
     x_distance = abs(wr_x - qb_x)
     x_speed = ballspeed * cos(h_angle) * cos(v_angle)
     time_a = x_distance / x_speed
-    time_b = round(time_a,2)
+    time_b = round(time_a,3)
     return(time_b)
     
 def time_to_ground(qb,ballspeed,vangle):
@@ -176,13 +176,13 @@ def time_to_ground(qb,ballspeed,vangle):
     c = qb[1]
     time_a = quad_greater(a,b,c)
     #((ballspeed * sin(vangle)) / gravity) + sqrt((2*qb[1]/(gravity)) + (((ballspeed * sin(vangle))**2)/(gravity ** 2)))
-    time_b = round(time_a,2)
+    time_b = round(time_a,3)
     return(time_b)
     
 def time_to_out(ballspeed,hangle,vangle,qb_position):
     distance = qb_position[0]
     time_a = distance / ((ballspeed * cos(hangle)) * cos(vangle))
-    time_b = round(time_a,2)
+    time_b = round(time_a,3)
     return(time_b)
 
 def hold_x(time,qbposition):
@@ -240,7 +240,8 @@ def run_after_catch(x_start,y_start,wrspeed,run_gen):#run_gen can be 1 or 2
     max_distance = sqrt((max_y ** 2) + (max_x ** 2))
     prov_distance = random.random() * max_distance
     wrrun_angle = (random.randint(0,100))/100
-    wrrun_side = random.randint(0,2)
+    set_as_one = 1
+    wrrun_side = random.randint(0,set_as_one)
     if wrrun_side == 0:
         run_direc = -1
         max_x = x_start
@@ -251,7 +252,7 @@ def run_after_catch(x_start,y_start,wrspeed,run_gen):#run_gen can be 1 or 2
         prov_distance = max_x / cos(wrrun_angle)
     if prov_distance * sin(wrrun_angle) > max_y:
         prov_distance = max_y / sin(wrrun_angle)
-    run_time = round(prov_distance/wrspeed,2)
+    run_time = round(prov_distance/wrspeed,3)
     run_x = []
     t_sta = time_interval
     t_fin = run_time + time_interval
@@ -370,7 +371,7 @@ def p_to_p(start,objective,speed,height):
     y_vals = []
     z_vals = []
     
-    time = round((distance/speed),2)
+    time = round((distance/speed),3)
     
     t_sta = 0
     t_fin = time + time_interval
@@ -731,12 +732,11 @@ def def_speed_cal(def_speed,def_pos,off_pos,endzone,pitch_width):
     if abs(endzone - def_pos[1]) < 0.5:
         x_speed, y_speed = def_to_man(def_speed,def_pos,off_pos)
     
-    if  pitch_width - def_pos[0] < 0.5 or def_pos[0] < 0.5:
-        x_speed = 0
-        y_speed = def_speed * y_val * (-1)
+    if  pitch_width - def_pos[0] < 0.75 or def_pos[0] < 0.75:
+        x_speed, y_speed = def_to_man(def_speed,def_pos,off_pos)
     
     separation = sqrt((x_disp**2) + (y_disp**2))
-    if separation < 2 or separation > 20:
+    if separation < 1.5 or separation > 20:
         x_speed, y_speed = def_to_man(def_speed,def_pos,off_pos)
     
     return(x_speed, y_speed)    
@@ -760,24 +760,24 @@ def off_speed_cal(off_speed,off_pos,def_pos,endzone,pitch_width):
         y_val = 1
     if off_pos[1] > endzone:
         y_val = -1
-    
-    if pitch_width - off_pos[0] < 0.5 or off_pos[0] < 0.5:
-        if abs(x_disp) < 1.25 and y_disp:
-            x_speed = 0
-            y_speed = off_speed * y_val
-        else:
-            if off_pos[0] < 0.5:
-                x_val = 1
-            else:
-                x_val = -1
+        
+    #if pitch_width - off_pos[0] < 0.5 or off_pos[0] < 0.5:
+    #if abs(x_disp) < 1.25:
+    #x_speed = 0
+    #y_speed = off_speed * y_val
+    #else:
+    #if off_pos[0] < 0.5:
+    #x_val = 1
+    #else:
+    #x_val = -1
             
     if abs(endzone - off_pos[1]) > abs(endzone - def_pos[1]):#defender closer to endzone 
-        if pitch_width - off_pos[0] < 0.5 or off_pos[0] < 0.5 and abs(y_disp) < 3:
-            if off_pos[0] < 0.5:
-                x_val = 1
-            else:
-                x_val = -1
-            
+        #if pitch_width - off_pos[0] < 0.5 or off_pos[0] < 0.5:
+        #    if off_pos[0] < 0.5:
+        #        x_val = 1
+        #    else:
+        #        x_val = -1
+           
         if x_disp == 0:
             x_speed = off_speed * cos(30 * pi/180) * x_val
             y_speed = off_speed * sin(30 * pi/180) * y_val
@@ -794,10 +794,10 @@ def off_speed_cal(off_speed,off_pos,def_pos,endzone,pitch_width):
                 y_speed = off_speed * sin(45 * pi/180) * y_val
     
     if abs(endzone - off_pos[1]) <= abs(endzone - def_pos[1]):#offense closer to endzone
-        if pitch_width - off_pos[0] < 0.5 or off_pos[0] < 0.5:
-            x_speed = 0
-            y_speed = off_speed * y_val
-        elif x_disp == 0:
+        #if pitch_width - off_pos[0] < 0.5 or off_pos[0] < 0.5:
+        #    x_speed = 0
+        #    y_speed = off_speed * y_val
+        if x_disp == 0:
             x_speed = 0
             y_speed = off_speed * y_val
         else:
@@ -811,6 +811,23 @@ def off_speed_cal(off_speed,off_pos,def_pos,endzone,pitch_width):
             else:
                 x_speed = off_speed * cos(60 * pi/180) * x_val
                 y_speed = off_speed * sin(60 * pi/180) * y_val
+    
+    if pitch_width - off_pos[0] < 0.75 or off_pos[0] < 0.75:
+        if abs(endzone - off_pos[1]) > abs(endzone - def_pos[1]):
+            if abs(x_disp) < 0.25:
+                x_speed = off_speed * cos(45 * pi/180) * x_val
+                y_speed = off_speed * sin(45 * pi/180) * y_val
+                if pitch_width - off_pos[0] < 0.5 or off_pos[0] < 0.55:
+                    x_speed = off_speed * cos(45 * pi/180) * - x_val
+                    y_speed = off_speed * sin(45 * pi/180) * y_val    
+                
+            else:
+                x_speed = 0
+                y_speed = off_speed * y_val
+            
+        if abs(endzone - off_pos[1]) <= abs(endzone - def_pos[1]):
+            x_speed = 0
+            y_speed = off_speed * y_val
     
     separation = sqrt((x_disp**2) + (y_disp**2))
     if separation > 20 or abs(off_pos[1] - endzone) < 3:
@@ -871,7 +888,7 @@ def def_chase(defender,runner,endzone,pitch_width,pitch_length):
 
         t += time_interval
         
-    time = round(t,2)
+    time = round(t,3)
     
     def_vals = [def_xs,def_ys,def_zs]
     off_vals = [off_xs,off_ys,off_zs]
@@ -1088,7 +1105,7 @@ def throw_react(ball_arrays,wreceiver,linebacker,safety):
     if cont_val == 0:
         possessor = 'None'
         
-    time = round(t,2)
+    time = round(t,3)
     
     return(time,coords,cont_val,possessor)
     
