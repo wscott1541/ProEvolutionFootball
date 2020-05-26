@@ -19,7 +19,7 @@ new_y_one = []
 y_data_one = [0,1,2,3,4,5,6,7,8,9]
 
 new_x_two = []
-x_data_two = [10,9,8,7,6,5,4,3,2,1]
+x_data_two = [0,1,2,3,4,5,6,7,8,9]
 new_y_two = []
 y_data_two = [10,9,8,7,6,5,4,3,2,1]
 
@@ -33,12 +33,11 @@ def init():
     line_one.set_data([], [])
     line_two.set_data([], [])
     #line_cos.set_data([], [])
-    return line_one,
-    return line_two,
+    return line_one, line_two,
     #return line_cos,
 
 def animate(i):
-    if i > 4:
+    if i >= 3:
         x_one = x_data_one[i]
         new_x_one.append(x_one)
         y_one = y_data_one[i]
@@ -51,9 +50,7 @@ def animate(i):
     line_one.set_data(new_x_one, new_y_one)
     line_two.set_data(new_x_two, new_y_two)
     #line_cos.set_data(x, y_cos)
-    return line_one,
-    return line_two,
-    #return line_cos,
+    return line_one, line_two,
 
 """
 def animate(i):
@@ -71,8 +68,9 @@ def animate(i):
     #return line_cos,
 """
 anim = animation.FuncAnimation(fig, animate, init_func=init,
-                               frames=10, interval=40, blit=True)
+                               frames=10, interval=80, blit=True)
 
 # set embed_frames=True to embed base64-encoded frames directly in the HTML
 # #anim.save('animation.html', writer=HTMLWriter(embed_frames=True))
+
 plt.show()
