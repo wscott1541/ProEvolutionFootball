@@ -1184,7 +1184,52 @@ def slant_to_vert(time,runner,turn):
         z_vals.append(z_val)
     return(x_vals,y_vals,z_vals)
     
-        
+"""
+FUNCTIONS FOR PLOTTING AND ANIMATING
+"""
+
+import matplotlib.pyplot as plt
+
+def plot_lines(times,off_color,def_color,origin,snaps,holds,throws,wrs,decoys,linebackers,safetys):
+    #turn the field green, before plotting
+    plt.rcParams['axes.facecolor'] = 'green'
+    
+    #plot throw and wr run
+    plt.plot(snaps[0],snaps[1],color='orange')
+    plt.scatter(wrs[0][0],wrs[1][0],color=off_color)
+    plt.plot(wrs[0],wrs[1],color=off_color)
+
+    plt.scatter(decoys[0][0],decoys[1][0],color=off_color)
+    plt.plot(decoys[0],decoys[1],color=off_color)
+
+    plt.scatter(holds[0][0],holds[1][0],color=off_color)
+    plt.plot(holds[0],holds[1],color=off_color)
+    if len(throws[0]) > 1:
+        plt.plot(throws[0],throws[1],color='orange')
+
+    #plot defense
+    plt.scatter(linebackers[0][0],linebackers[1][0],color=def_color)
+    plt.plot(linebackers[0],linebackers[1],color=def_color)
+    plt.scatter(safetys[0][0],safetys[1][0],color=def_color)
+    plt.plot(safetys[0],safetys[1],color=def_color)
+
+    #plot offensive line
+    olinex,oliney = o_line(origin)
+    plt.scatter(olinex,oliney,color=off_color)
+
+    plt.xlim([0,50])
+    plt.show()
+
+    plt.plot(snaps[1],snaps[2],color='orange')
+    #print('z2: ',snap_zvals)
+    plt.plot(holds[1],holds[2],color=off_color)
+    if len(throws[0]) == 1:
+        plt.plot(linebackers[1],linebackers[2],color=def_color)
+    if len(throws[0]) > 1:
+        plt.plot(throws[1],throws[2],color='orange')
+    plt.ylim([0,4])
+
+    plt.show()       
         
         
         
