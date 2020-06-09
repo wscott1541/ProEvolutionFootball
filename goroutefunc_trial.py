@@ -8,7 +8,7 @@ Created on Thu May 14 11:48:34 2020
 
 import AmericanFootballFunctionsv5 as AFF
 import random
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 from math import pi
 
 
@@ -124,13 +124,14 @@ def func(origin,qb,wreceiver,decoy,wrside,ballspeed,hangle,vangle,thold,lineback
     
     decoy_x, decoy_y, decoy_z = AFF.verts(tsnap,decoy,1)
     AFF.finalise_deets(decoy,tsnap,decoy_x,decoy_y)
-    
+    """
     if wrside == 'L':
         rb_turn_x = 20 - random.randint(1,4)
     if wrside == 'R':
         rb_turn_x = 30 + random.randint(1,4)
     rb_turn_y = origin[1]
     rb_turn = [rb_turn_x,rb_turn_y]
+    """
     
     lb_direction = random.randint(0,2)#runs at qb=0,left=1, right=2
     
@@ -146,7 +147,7 @@ def func(origin,qb,wreceiver,decoy,wrside,ballspeed,hangle,vangle,thold,lineback
         if lb_direction == 2:
             lb_x, lb_y, lb_z = AFF.p_to_stop(tsnap,linebacker,[45,AFF.last_val(linebacker)[1]])
     AFF.finalise_deets(linebacker,tsnap,lb_x,lb_y)
-    
+
     if lb_direction == 0:
         s_rand = random.randint(0,1)
         if s_rand == 0:
@@ -186,9 +187,9 @@ def func(origin,qb,wreceiver,decoy,wrside,ballspeed,hangle,vangle,thold,lineback
         else:
             lb_x_hold, lb_y_hold, lb_z_hold = AFF.lb_rush_blocked(thold,linebacker,qb,origin)
     if lb_direction == 1:
-        lb_x_hold, lb_y_hold, lb_z_hold = AFF.p_to_stop(tsnap,linebacker,[5,AFF.last_val(linebacker)[1]])
+        lb_x_hold, lb_y_hold, lb_z_hold = AFF.p_to_stop(thold,linebacker,[5,AFF.last_val(linebacker)[1]])
     if lb_direction == 2:
-        lb_x_hold, lb_y_hold, lb_z_hold = AFF.p_to_stop(tsnap,linebacker,[45,AFF.last_val(linebacker)[1]])
+        lb_x_hold, lb_y_hold, lb_z_hold = AFF.p_to_stop(thold,linebacker,[45,AFF.last_val(linebacker)[1]])
     
     qb_x = AFF.join_two(qb_x,qb_hold_x)
     qb_y = AFF.join_two(qb_y,qb_hold_y)
@@ -240,10 +241,12 @@ def func(origin,qb,wreceiver,decoy,wrside,ballspeed,hangle,vangle,thold,lineback
     
         if lb_direction != 0:
             lb_t_x, lb_t_y, lb_t_z = AFF.p_to_stop(tthrow,linebacker,t_end)
-            lb_x = AFF.join_two(lb_x,lb_t_x)
-            lb_y = AFF.join_two(lb_y,lb_t_y)
-            lb_z = AFF.join_two(lb_z,lb_t_z)
-            AFF.finalise_deets(linebacker,tthrow,lb_x,lb_y)
+        else:
+            lb_t_x, lb_t_y, lb_t_z = AFF.static(tthrow,linebacker)
+        lb_x = AFF.join_two(lb_x,lb_t_x)
+        lb_y = AFF.join_two(lb_y,lb_t_y)
+        lb_z = AFF.join_two(lb_z,lb_t_z)
+        AFF.finalise_deets(linebacker,tthrow,lb_x,lb_y)
         
         s_t_x, s_t_y, s_t_z = AFF.p_to_stop(tthrow,safety,t_end)
         s_x = AFF.join_two(s_x,s_t_x)
@@ -346,7 +349,7 @@ def func(origin,qb,wreceiver,decoy,wrside,ballspeed,hangle,vangle,thold,lineback
 snaps,holds,throws,wrs,decoys,lbs,safetys,times = func(origin,qb,wr,decoy,wrside,ballspeed,hangle,vangle,holdtime,linebacker,safety)
 #func(origin,qb,wreceiver,decoy,target,wrside,ballspeed,vangle,thold,linebacker,safety)
 
-"""Process the outputs"""
+"""Plot the outputs"""
 AFF.plot_lines(times,off_color,def_color,origin,snaps,holds,throws,wrs,decoys,lbs,safetys)
 """
 #turn the field green, before plotting
@@ -388,10 +391,6 @@ if len(throws[0]) > 1:
 plt.ylim([0,4])
 plt.show()
 """
-print(times)
-
-print('wrs: ',len(wrs[0]))
-print('lbs: ',len(lbs[0]))
 
 import alternativeanimationtest as animateplay
 
