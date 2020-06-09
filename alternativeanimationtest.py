@@ -3,7 +3,7 @@
 """
 Created on Tue May 26 17:53:29 2020
 
-@author: SoapBar
+@author: WS
 """
 
 """
@@ -16,6 +16,8 @@ More information at https://note.nkmk.me/en/python-pillow-imagedraw/
 from PIL import Image, ImageDraw
 
 import numpy as ny
+
+from AmericanFootballFunctionsv5 import time_interval
 
 """
 def create_image_with_ball(width, height, ball_x, ball_y, ball_size,ball_color):
@@ -61,12 +63,10 @@ def play_frame(time,times,pitch_width, pitch_length,snaps_line,holds_line,throws
         
     draw.line(holds_line,fill=off_color,width=6)
         
-    if time > times[0] + times[1] and time <= times[0] + times[1] + times[2] and times[2] > 0:
-        draw.line(throws_line,fill='orange',width=2)
+    #if time > times[0] + times[1] and time <= times[0] + times[1] + times[2] and times[2] > 0:
+    #    draw.line(throws_line,fill='orange',width=2)
     #if I'm doing this, I don't need to remove the lines once plotted (and it looks weird once thrown if it disappears)
-        
-    
-    
+         
     #Draw lines that are not time dependent
     draw.line(holds_line,fill=off_color,width=6)    
     draw.line(wrs_line,fill=off_color,width=6)
@@ -79,21 +79,70 @@ def play_frame(time,times,pitch_width, pitch_length,snaps_line,holds_line,throws
     return img
 
 def line_add(actual,prov,time):
-    t_var = int(time * 1000)
+    t_var = int(time)#int(time * 1000)
     position = (10*actual[0][t_var],10*(10 + 100 - actual[1][t_var]))
     prov.append(position)
+
+def process_arrays_for_animation(times,snaps,holds,throws,wrs,decoys,linebackers,safetys):
+    total_time = times[0]+times[1]+times[2]+times[3]
+    total_frames = total_time * (1 / time_interval)
+    frame_intervals = int(total_frames / 500)
+    
+    snap_end = int(times[0]/total_time * frame_intervals)
+    throw_sta = int((times[0]+times[1])/total_time * frame_intervals)
+    throw_end = int((times[0]+times[1]+times[2])/total_time * frame_intervals)
+    
+    new_snaps = []
+    new_holds = []
+    new_throws = [throws[0]]
+    new_wrs = []
+    new_decoys = []
+    new_linebackers = []
+    new_safetys = []
+    for i in range(0,500):
+        val = i * frame_intervals
+        if val < snap_end:
+            new_snaps.append(snaps[val])
+        new_holds.append(holds[val])
+        if val > throw_sta and val < throw_end:
+            new_throws.append(throws[val])
+        new_wrs.append(wrs[val])
+        new_decoys.append(decoys[val])
+        new_linebackers.append(linebackers[val])
+        new_safetys.append(safetys[val])
+        
+    new_snaps.append(snaps[-1])
+    new_throws.append(throws[-1])
+    new_holds.append(holds[-1])
+    new_wrs.append(wrs[-1])
+    new_decoys.append(decoys[-1])
+    new_linebackers.append(linebackers[-1])
+    new_safetys.append(safetys[-1])
+    
+    anim_details = [frame_intervals,total_frames,snap_end,throw_sta,throw_end]
+    
+    return(anim_details,new_snaps,new_throws,new_holds,new_wrs,new_decoys,new_linebackers,new_safetys)
     
 
 def animate_play(times,pitch_width, pitch_length,snaps,holds,throws,wrs,decoys,linebackers,safetys,off_color,def_color):
-    t_sta = 0.001
-    t_fin = times[0] + times[1] + 0.001
-    if times[2] > 0:
-        t_fin = times[0] + times[1] + times[2] + 0.001
-    if times[3] > 0:
-        t_fin = times[0] + times[1] + times[2] + times[3] + 0.001
-    if times[3] > 4:
-        t_fin = times[0] + times[1] + times[2] + times[3] + 0.001 - 4
-
+    
+    details,snaps_x,holds_x,throws_x,wrs_x,decoys_x,linebackers_x,safetys_x = process_arrays_for_animation(times,snaps[0],holds[0],throws[0],wrs[0],decoys[0],linebackers[0],safetys[0])
+    details,snaps_y,holds_y,throws_y,wrs_y,decoys_y,linebackers_y,safetys_y = process_arrays_for_animation(times,snaps[1],holds[1],throws[1],wrs[1],decoys[1],linebackers[1],safetys[1])
+    interval = details[0]
+    length = int(details[1])
+    print('length: ',length)
+    snap_end = details[2]
+    throw_sta = details[3]
+    throw_end = details[4]
+    
+    snaps = [snaps_x,snaps_y]
+    holds = [holds_x,holds_y]
+    throws = [throws_x,throws_y]
+    wrs = [wrs_x,wrs_y]
+    decoys = [decoys_x,decoys_y]
+    linebackers = [linebackers_x,linebackers_y]
+    safetys = [safetys_x,safetys_y]
+    
     frames = []
     
     prov_snaps = [(10*snaps[0][0],10*(10 + pitch_length - snaps[1][0]))]
@@ -110,34 +159,42 @@ def animate_play(times,pitch_width, pitch_length,snaps,holds,throws,wrs,decoys,l
     else:
         prov_throws = [(0,0),(0,0)]
     
-    for t in ny.arange(t_sta,t_fin-3.5,0.001):###I need to make these not such insane intervals, which can be done here or in the line_add function - a structured approach to plotting (through snap, hold, throw, rac) might be best
-        if t <= times[0]:
-            line_add(snaps,prov_snaps,t)
-        if t > times[0]:
+    for v in range(0,499):#ny.arange(t_sta,t_fin,0.001):###I need to make these not such insane intervals, which can be done here or in the line_add function - a structured approach to plotting (through snap, hold, throw, rac) might be best
+        if v <= snap_end:
+            line_add(snaps,prov_snaps,v)
+        if v > snap_end:
             prov_snaps.append((0,0))
         snaps_line = tuple(prov_snaps)
         
-        if times[2] > 0 and t > (times[0] + times[1]) and t < (times[0] + times[1] + times[2]):
-            line_add(throws,prov_throws,t-(times[0] + times[1]))
+        if times[2] > 0 and v > throw_sta and v < throw_end:
+            line_add(throws,prov_throws,v-throw_sta)
         throws_line = tuple(prov_throws)
         
-        line_add(holds,prov_holds,t)
-        holds_line = tuple(prov_holds)
-        line_add(wrs,prov_wrs,t)
-        wrs_line = tuple(prov_wrs)
-        line_add(decoys,prov_decoys,t)
-        decoys_line = tuple(prov_decoys)
+        if v < len(holds[0]):
+            line_add(holds,prov_holds,v)
         
-        line_add(linebackers,prov_linebackers,t)
+        line_add(wrs,prov_wrs,v)
+        
+        line_add(decoys,prov_decoys,v)
+            
+        line_add(linebackers,prov_linebackers,v)
+            
+        line_add(safetys,prov_safetys,v)#safety doesn't appear until starts moving
+        
+        decoys_line = tuple(prov_decoys)
+        holds_line = tuple(prov_holds)
+        wrs_line = tuple(prov_wrs)
+        
+        
         linebackers_line = tuple(prov_linebackers)#there's something off with the linebacker tbq
-        line_add(safetys,prov_safetys,t)#safety doesn't appear until starts moving
+        
         safetys_line = tuple(prov_safetys)
     
-        new_frame = play_frame(t,times,pitch_width, pitch_length,snaps_line,holds_line,throws_line,wrs_line,decoys_line,linebackers_line,safetys_line,off_color,def_color)
+        new_frame = play_frame(v,times,pitch_width, pitch_length,snaps_line,holds_line,throws_line,wrs_line,decoys_line,linebackers_line,safetys_line,off_color,def_color)
         frames.append(new_frame)
-    print(len(frames))
+        
     #inputs = blahblahblah
-    frames[0].save('PlayRoute.gif', format='GIF', append_images=frames[1:], save_all=True, duration=1, loop=0)
+    frames[0].save('PlayRoute.gif', format='GIF', append_images=frames[1:], save_all=True, duration=interval, loop=0)
     print('It fucking worked (and your file is at...)')    
 """        
 for i in range(1,10):
