@@ -1171,15 +1171,17 @@ def slant_to_vert(time,runner,turn):
             x_vals.append(new_x)
             slant_times.append(t)
         else:
-            x_val = vert_x(t-last_val(slant_times),turn)
+            x_val = turn[0]
             x_vals.append(x_val)
+            
         move_y = y_value * y_comp * speed * t
         new_y = last_val(runner)[1] + move_y
         if abs(move_y) <= abs(y_disp):
             y_vals.append(new_y)
         else:
-            y_val = vert_y(t-last_val(slant_times),speed,turn,1)
+            y_val = turn[1] + speed * (t - last_val(slant_times))
             y_vals.append(y_val)
+            
         z_val = runner[1] * (2/3)
         z_vals.append(z_val)
     return(x_vals,y_vals,z_vals)
