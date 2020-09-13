@@ -117,7 +117,6 @@ def play(offense,o_colour,defense,d_colour,position):
     wr_x, wr_y, wr_z = pf.verts(tsnap,wrec,1)
     pf.finalise_pos_speed(tsnap,wrec,wr_x,wr_y)
 
-    
     dec_x, dec_y, dec_z = pf.verts(tsnap,decoy,1)
     pf.finalise_pos_speed(tsnap,decoy,dec_x,dec_y)
     

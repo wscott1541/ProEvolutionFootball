@@ -30,7 +30,8 @@ def player_details(name,height,forty,firstsplit,secondsplit,arm_length,vert_jump
               'arm': arm_length,
               'vert': vert_jump,
               'current speed': [0],
-              'position': []}
+              'position': [],
+              'status': []}
     return(player)
     
 def qb_details(name, height):
@@ -39,7 +40,8 @@ def qb_details(name, height):
           'speed': 0.5,
           'acc': 0.25,
           'current speed': [0],
-          'position':[]}
+          'position':[],
+          'status': []}
     return(qb)
     
 def offense_details(name,colour_a,colour_b,qb,wr_one,wr_two,running_back,tight_end):
@@ -64,7 +66,8 @@ def cb_details(name,height,forty,firstsplit,secondsplit,arm_length,vert_jump,cmp
               'vert': vert_jump,
               'current speed': [0],
               'position': [],
-              '%age': cmp_pct}
+              '%age': cmp_pct,
+              'status': []}
     return(cb)    
     
 def defense_details(name,colour_a,colour_b,rusher,mlb,safety,cb_one,cb_two):
@@ -75,7 +78,8 @@ def defense_details(name,colour_a,colour_b,rusher,mlb,safety,cb_one,cb_two):
                'LB': mlb,
                'S': safety,
                'CB1': cb_one,
-               'CB2': cb_two}
+               'CB2': cb_two,
+               'status': []}
     return(defense)
     
 """Cleveland Browns"""
@@ -96,7 +100,7 @@ ward = player_details('Jimmie Ward',1.79,4.47,1.56,2.54,0.79,0.97)
 sherman = cb_details('Richard Sherman',1.9,4.56,1.61,2.65,0.81,0.97,62.3)
 ahkello = cb_details('Ahkello Witherspoon',1.9,4.45,1.53,2.57,0.84,1.03,56.6)
 
-niners_defense = defense_details('San Francisco 49ers','red','white',n_bosa,warner)
+niners_defense = defense_details('San Francisco 49ers','red','white',n_bosa,warner,ward,sherman,ahkello)
 
 
 def choose_teams():

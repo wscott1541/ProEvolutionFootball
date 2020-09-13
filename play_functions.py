@@ -250,7 +250,8 @@ def assessment_loop(details,kind):
     return(time,player)
         
 #def assess_catch(catch_potential,catch_details,block_potential,block_details):
-    
+
+"""THROW"""    
    
 def throw_react(ball_arrays,throw_side,
                 wr,
@@ -345,6 +346,62 @@ def throw_react(ball_arrays,throw_side,
     new_time = round(time,rounding)
     
     return(new_time,coords,possessor,possession)
+    
+def throw_outcomes(possessor,coordinates,time,
+                   wr_one,wr_one_x,wr_one_y,wr_one_z,
+                   wr_two,wr_two_x,wr_two_y,wr_two_z,
+                   cb_one,cb_one_x,cb_one_y,cb_one_z,
+                   cb_two,cb_two_x,cb_two_y,cb_two_z,
+                   s,
+                   lb):
+    if possessor['name'] == [wr_one]['name']:
+        wr_one_t_x, wr_one_t_y, wr_one_t_z = p_to_p_in_t(time,wr_one,coordinates)
+        wr_one_x = join_two(wr_one_x,wr_one_t_x)
+        wr_one_y = join_two(wr_one_y,wr_one_t_y)
+        wr_one_z = join_two(wr_one_z,wr_one_t_z)
+        finalise_pos_speed(time,wr_one,wr_one_x,wr_one_y)
+                    
+        cb_one_t_x, cb_one_t_y, cb_one_t_z = point_to_chase(time,cb_one,[wr_one_t_x,wr_one_t_y])
+        cb_one_x = join_two(cb_one_x,wr_one_t_x)
+        cb_one_y = join_two(cb_one_y,wr_one_t_y)
+        cb_one_z = join_two(cb_one_z,wr_one_t_z)
+        finalise_pos_speed(time,wr_one,wr_one_x,wr_one_y)
+                
+    if possessor['name'] == [wr_two]['name']:
+        wr_two_t_x, wr_two_t_y, wr_two_t_z = p_to_p_in_t(time,wr_two,coordinates)
+        wr_two_x = join_two(wr_two_x,wr_two_t_x)
+        wr_two_y = join_two(wr_two_y,wr_two_t_y)
+        wr_two_z = join_two(wr_two_z,wr_two_t_z)
+        finalise_pos_speed(time,wr_one,wr_two_x,wr_two_y)
+                    
+        cb_two_t_x, cb_two_t_y, cb_two_t_z = point_to_chase(time,cb_one,[wr_two_t_x,wr_two_t_y])
+        cb_two_x = join_two(cb_two_x,cb_two_t_x)
+        cb_two_y = join_two(cb_two_y,cb_two_t_y)
+        cb_two_z = join_two(cb_two_z,cb_two_t_z)
+        finalise_pos_speed(time,cb_two,cb_two_x,cb_two_y)
+        
+    if possessor['name'] == [cb_one]['name']:
+        cb_one_t_x, cb_one_t_y, cb_one_t_z = p_to_p_in_t(time,wr_one,coordinates)
+        cb_one_x = join_two(cb_one_x,wr_one_t_x)
+        cb_one_y = join_two(cb_one_y,wr_one_t_y)
+        cb_one_z = join_two(cb_one_z,wr_one_t_z)
+        finalise_pos_speed(time,wr_one,wr_one_x,wr_one_y)
+    
+    if possessor['name'] == [cb_two]['name']:
+        cb_two_t_x, cb_two_t_y, cb_two_t_z = p_to_p_in_t(time,cb_two,coordinates)
+        cb_two_x = join_two(cb_two_x,cb_two_t_x)
+        cb_two_y = join_two(cb_two_y,cb_two_t_y)
+        cb_two_z = join_two(cb_two_z,cb_two_t_z)
+        finalise_pos_speed(time,cb_two,cb_two_x,cb_two_y)
+     
+    s_x, s_y, s_z = p_to_p_in_t(time,s,coordinates)  
+    temp_s = [s_x,s_z,s_z]
+
+    if lb['status'] == 'Hold':         
+        lb_x, lb_y, lb_z = p_to_p_in_t(time,s,coordinates)
+        temp_lb = [lb_x,lb_z,lb_z]
+        
+    return(temp_s,temp_lb)
 
 """INDEPENDENT PLAYS"""
     
@@ -370,13 +427,13 @@ def static(time,player):
     
 
 def verts(time,player,direction):
-    start_pos = player['positions'][-1]
+    start_pos = player['position'][-1]
     
     #t_sta = 0
     t_fin = time + time_interval
     x_vals = [start_pos[0]]
     y_vals = [start_pos[1]]
-    z_vals = [start_pos[2]]
+    z_vals = [player['height']]
     
     for t in numpy.arange(time_interval,t_fin,time_interval):
         speed = speed_func(player,t)
@@ -443,4 +500,105 @@ def p_to_p_in_t(time,player,objective):
         z_val = player['height'] * (2/3)
         z_vals.append(z_val)
     return(x_vals,y_vals,z_vals) 
+    
+def point_to_chase(time,chaser,chase_arrays):
+    t_sta = 0
+    t_fin = time
+    full_time = []
+    for t in numpy.arange(t_sta,t_fin,time_interval):
+        full_time.append(t)
+    length = len(full_time)
+    chasing_x = [chaser['position'][-1][0]]
+    chasing_y = [chaser['position'][-1][1]]
+    chasing_z = [chaser['height'] * (2/3)]
+    for i in range(1,length):
+        x_disp = chase_arrays[0][i] - chasing_x[(i - 1)]
+        y_disp = chase_arrays[1][i] - chasing_y[(i - 1)]
+        
+        if x_disp > 0:
+            x_value = 1
+        if x_disp < 0:
+            x_value = -1
+        if y_disp > 0:
+            y_value = 1
+        if y_disp < 0:
+            y_value = -1
+        
+        if x_disp == 0:
+            x_comp = 0
+            x_value = 0
+            y_comp = 1
+        elif y_disp == 0:#don't strictly need, but whatever.
+            x_comp = 1
+            y_comp = 0
+            y_value = 0
+        elif x_disp == 0 and y_disp == 0:
+            x_comp = 0
+            x_value = 0
+            y_comp = 0
+            y_value = 0
+        else:
+            angle = atan(y_disp/x_disp)
+            x_comp = abs(cos(angle))
+            y_comp = abs(sin(angle))
+        speed = speed_func(chaser,i*time_interval)
+        move_x = chasing_x[(i - 1)] + x_value * x_comp * speed * time_interval
+        chasing_x.append(move_x)
+        move_y = chasing_y[(i - 1)] + y_value * y_comp * speed * time_interval
+        chasing_y.append(move_y)
+        z_val = chaser[1] * (2/3)
+        chasing_z.append(z_val)
+    return(chasing_x,chasing_y,chasing_z)
+
+"""PLOT"""
+
+import matplotlib.pyplot as plt
+
+def plot_lines(off_color,def_color,origin,snaps,holds,throws,wrs,decoys,cb_ones,cb_twos,linebackers,safetys):
+    #turn the field green, before plotting
+    plt.rcParams['axes.facecolor'] = 'green'
+    
+    #plot throw and wr run
+    plt.plot(snaps[0],snaps[1],color='orange')
+    plt.scatter(wrs[0][0],wrs[1][0],color=off_color)
+    plt.plot(wrs[0],wrs[1],color=off_color)
+
+    plt.scatter(decoys[0][0],decoys[1][0],color=off_color)
+    plt.plot(decoys[0],decoys[1],color=off_color)
+
+    plt.scatter(holds[0][0],holds[1][0],color=off_color)
+    plt.plot(holds[0],holds[1],color=off_color)
+    if len(throws[0]) > 1:
+        plt.plot(throws[0],throws[1],':',color='orange')
+
+    #plot defense
+    plt.scatter(cb_ones[0][0],cb_ones[1][0],color=def_color)
+    plt.plot(cb_ones[0],cb_ones[1],color=def_color)
+    plt.scatter(cb_twos[0][0],cb_twos[1][0],color=def_color)
+    plt.plot(cb_twos[0],cb_twos[1],color=def_color)
+    
+    plt.scatter(linebackers[0][0],linebackers[1][0],color=def_color)
+    plt.plot(linebackers[0],linebackers[1],color=def_color)
+    plt.scatter(safetys[0][0],safetys[1][0],color=def_color)
+    plt.plot(safetys[0],safetys[1],color=def_color)
+
+    #plot offensive line
+    #olinex,oliney = o_line(origin)
+    #plt.scatter(olinex,oliney,color=off_color)
+
+    plt.xlim([0,50])
+    plt.show()
+    
+    """
+    plt.plot(snaps[1],snaps[2],color='orange')
+    #print('z2: ',snap_zvals)
+    plt.plot(holds[1],holds[2],color=off_color)
+    if len(throws[0]) == 1:
+        plt.plot(linebackers[1],linebackers[2],color=def_color)
+    if len(throws[0]) > 1:
+        plt.plot(throws[1],throws[2],color='orange')
+    plt.ylim([0,4])
+
+    plt.show()
+    """
     
