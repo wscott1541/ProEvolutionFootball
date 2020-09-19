@@ -16,30 +16,51 @@ import play_functions as pf
 
 import game_inputs as gi
 
+def pull_offense(offense):
+    quarterback = offense['QB']
+    receiver_one = offense['WR1']
+    receiver_two = offense['WR2']
+    runningback = offense['RB']
+    tightend = offense['TE']
+    
+    return(quarterback,receiver_one,receiver_two,runningback,tightend)
+    
+def pull_defense(defense):
+    edgerusher = defense['rusher']
+    linebacker = defense['LB']
+    safety = defense['S']
+    corner_one = defense['CB1']
+    corner_two = defense['CB2']
+    
+    return(edgerusher,linebacker,safety,corner_one,corner_two)
+
 def play(offense,o_colour,defense,d_colour,position,mtg):
 
     origin = position
     
+    qb,wr_one,wr_two,rb,te = pull_offense(offense)
+    
+    edge,lb,s,cb_one,cb_two = pull_defense(defense)
+    
+    
     """SORT TEAM AND INPUTS"""
     
-    qb = offense['QB']
+    
     qb_y = gi.qb_inputs(qb) + origin[1]
     qb_position = [origin[0],qb_y]
+    
     pf.add_position_to_track(qb,qb_position)
-    
-    wr_one = offense['WR1']
-    wr_two = offense['WR2']
+        
     gi.wr_inputs(wr_one,wr_two,origin)
-    
-    rb = offense['RB']
+
     rb_position = [(origin[0]-3),(origin[1]-7)]
     pf.add_position_to_track(rb,rb_position)
     
-    te = offense['TE']
+    
     te_position = [origin[0]+6,origin[1]]
     pf.add_position_to_track(te,te_position)
 
-    edge = defense['rusher']
+    
     edge_position = [origin[0]-6,origin[1]]
     pf.add_position_to_track(edge,edge_position)
     
@@ -48,19 +69,18 @@ def play(offense,o_colour,defense,d_colour,position,mtg):
         lb_action = 'Rush'
     else:
         lb_action = 'Hold'
-    lb = defense['LB']
+    
     lb['status'].append(lb_action)
     lb_position = [25,(position[1]+10)]
     pf.add_position_to_track(lb,lb_position)
     
-    s = defense['S']
+    
     s_position = [25,(position[1]+20)]
     pf.add_position_to_track(s,s_position)
     
-    cb_one = defense['CB1']
-    cb_two = defense['CB2']
-    cb_one_position = [wr_one['track']['x'][0],position[1]+5]
-    cb_two_position = [wr_two['track']['y'][0],position[1]+5]
+    
+    cb_one_position = [wr_one['track_x'][0],position[1]+5]
+    cb_two_position = [wr_two['track_x'][0],position[1]+5]
     pf.add_position_to_track(cb_one,cb_one_position)
     pf.add_position_to_track(cb_two,cb_two_position)
     
@@ -87,7 +107,7 @@ def play(offense,o_colour,defense,d_colour,position,mtg):
             pf.add_position_to_track(qb,qb_pos)
     
             wr_one_x,wr_one_y,wr_one_z,wr_two_x,wr_two_y,wr_two_z = gi.wr_route_gen(wr_one,wr_two,t_pre)    
-
+            
             pf.point_to_chase(t_pre,cb_one,[wr_one_x,wr_one_y],'Y')
             pf.point_to_chase(t_pre,cb_two,[wr_two_x,wr_two_y],'Y')
     
@@ -138,13 +158,11 @@ def play(offense,o_colour,defense,d_colour,position,mtg):
                     s,
                     lb)
                 
-            
-    
-    holds = [qb_x, qb_y, qb_z]
-    
+        
+    #holds = [qb_x, qb_y, qb_z]
     
     
-    pf.plot_lines(o_colour,d_colour,origin,snaps,holds,throws,wr_one,wr_two,cb_one,cb_two,lb,s)
+    pf.plot_lines(o_colour,d_colour,origin,snaps,qb,throws,wr_one,wr_two,cb_one,cb_two,lb,s)
     
     
 

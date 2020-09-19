@@ -13,9 +13,9 @@ https://matplotlib.org/3.1.0/gallery/color/named_colors.html
 (https://www.reddit.com/r/NFL_Draft/comments/81snap/looking_at_this_years_rbs_3cone_and_20yard/)"""
 
 avg_s = 4.28
-track = {'x':[],
-         'y':[],
-         'z':[]}
+#track = {'x':[],
+#         'y':[],
+#         'z':[]}
 
 def acc_calc(a,b):
     if a != b:
@@ -45,7 +45,9 @@ def player_details(name,side,height,forty,firstsplit,secondsplit,arm_length,vert
               'current speed': [0],
               'position': [],
               'status': [],
-              'track': track}
+              'track_x': [],
+              'track_y': [],
+              'track_z': []}
     return(player)
     
 def qb_details(name, height):
@@ -57,7 +59,9 @@ def qb_details(name, height):
           'current speed': [0],
           'position':[],
           'status': [],
-          'track': track}
+          'track_x': [],
+          'track_y': [],
+          'track_z': []}
     return(qb)
     
 def offense_details(name,colour_a,colour_b,qb,wr_one,wr_two,running_back,tight_end):
@@ -86,7 +90,9 @@ def cb_details(name,height,forty,firstsplit,secondsplit,arm_length,vert_jump,cmp
               'position': [],
               '%age': cmp_pct,
               'status': [],
-              'track': track}
+              'track_x': [],
+              'track_y': [],
+              'track_z': []}
     return(cb)    
     
 def defense_details(name,colour_a,colour_b,rusher,mlb,safety,cb_one,cb_two):

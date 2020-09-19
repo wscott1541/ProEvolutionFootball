@@ -29,6 +29,8 @@ def wr_inputs(wr_one,wr_two,position):
     wr_one_pos = [wr_one_x,position[1]]    
     wr_two_pos = [wr_two_x,position[1]]
     
+    #wr_one['track_x'].append(wr_one_x)
+    
     pf.add_position_to_track(wr_one,wr_one_pos)
     pf.add_position_to_track(wr_two,wr_two_pos)
     
@@ -45,11 +47,11 @@ def wr_route_options(wr_one,wr_two):
 def wr_route_gen(wr_one,wr_two,time):
     
     if wr_one['status'][-1] == 'Vert':
-        wr_one_coord = [wr_one['track']['x'][-1],102]
+        wr_one_coord = [wr_one['track_x'][-1],102]
         wr_one_x,wr_one_y,wr_one_z = pf.p_to_p_in_t(time,wr_one,wr_one_coord,'B')
         
     if wr_two['status'][-1] == 'Vert':
-        wr_two_coord = [wr_two['track']['y'][-1],102]
+        wr_two_coord = [wr_two['track_x'][-1],102]
         wr_two_x,wr_two_y,wr_two_z = pf.p_to_p_in_t(time,wr_two,wr_two_coord,'B')
         
     return(wr_one_x,wr_one_y,wr_one_z,wr_two_x,wr_two_y,wr_two_z)    
