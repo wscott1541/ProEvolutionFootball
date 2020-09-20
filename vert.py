@@ -86,11 +86,11 @@ def play(offense,o_colour,defense,d_colour,position):
     else:
         lb_action = 'Hold'
     lb = defense['LB']
-    lb_position = [[25,(position[1]+10)]]
+    lb_position = [[25,(position[1]+8)]]
     pf.add_position(lb,lb_position)
     
     s = defense['S']
-    s_position = [[25,(position[1]+25)]]
+    s_position = [[25,(position[1]+16)]]
     pf.add_position(s,s_position)
     
     cb_one = defense['CB1']

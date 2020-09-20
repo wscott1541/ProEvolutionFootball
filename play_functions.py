@@ -109,16 +109,17 @@ def acc_factor(player,point,prev_one,prev_two):
         val = 1 + sin(angle - pi/2)
     if player['side'] == 'D':
         val = angle * (2/pi)
+    #val is between 0 and 2
     
     #if angle < (30 * pi/180):
     #    val = val * (-1)
     
-    n = val * (3.81 /player['shuttle'])
+    n = (val/2) * (3.81 /player['shuttle'])
     
     return(n)  
 
 def speed_func(runner,latest_speed,acc_factor,time_step):
-    speed = latest_speed + runner['acc'] * acc_factor * time_step
+    speed = latest_speed + runner['acc'] * time_step * acc_factor
     if speed > runner['speed']:
         new_speed = runner['speed']
     else:
@@ -628,6 +629,253 @@ def verts(time,player,direction):
         
     return(x_vals,y_vals,z_vals)
     
+def pull_target(speeds,prev_distance,route_distances,x_list,y_list):
+    
+    distance = speeds[-1] * 0.001
+    
+    full = prev_distance + distance
+    
+    xs = []
+    ys = []
+    
+    for i in range(0,len(x_list)-1):
+        #print(route_dists[i])
+        #print(full)
+        if route_distances[i] <= full:
+            xs.append(x_list[i+1])
+            ys.append(y_list[i+1])
+    
+    target = [xs[-1],ys[-1]]
+    
+    return(target)
+"""
+def line_template(player,time,write):  
+    y_vals = []
+    x_vals = []
+
+    route_dists = [0]
+    
+    runner_distance = 0
+
+    fulltime = time
+
+    t = 0
+
+    speeds = [player['current speed'][-1]]
+
+    x_track = [player['track_x'][-1]]
+    y_track = [player['track_y'][-1]]
+
+    for x in numpy.arange(0,50,0.01):
+        y = x + 1#EQUATION TO VARY
+        x_vals.append(x)
+        y_vals.append(y)
+    
+        if x >= 0.01:
+            dist = x/0.01
+            route_dists.append(dist)
+
+    while t < fulltime:
+    
+        target = pull_target(x_vals,y_vals)
+
+        if len(player['track_x']) <= 2:
+            acc = 1
+        else:
+            prev_one = [x_track[-1],y_track[-1]]
+            prev_two = [x_track[-2],y_track[-2]]
+            acc = acc_factor(player,target,prev_one,prev_two)
+        
+        x_disp = target[0] - x_track[-1]
+        y_disp = target[1] - y_track[-1]
+    
+        if x_disp > 0:
+            x_value = 1
+        if x_disp < 0:
+            x_value = -1
+        if y_disp > 0:
+            y_value = 1
+        if y_disp < 0:
+            y_value = -1
+    
+        if x_disp == 0:
+            x_comp = 0
+            x_value = 0
+            y_comp = 1
+        elif y_disp == 0:#don't strictly need, but whatever.
+            x_comp = 1
+            y_comp = 0
+            y_value = 0
+        elif x_disp == 0 and y_disp == 0:
+            x_comp = 0
+            x_value = 0
+            y_comp = 0
+            y_value = 0
+        else:
+            angle = atan(abs(y_disp)/abs(x_disp))
+            x_comp = cos(angle)
+            y_comp = sin(angle)
+        
+        speed = speed_func(player,speeds[-1],acc,0.001)
+    
+        move_x = speed * x_comp * x_value * 0.001
+        move_y = speed * y_comp * y_value * 0.001
+    
+        new_x = x_track[-1] + move_x
+        new_y = y_track[-1] + move_y
+    
+        seg_distance = sqrt((move_x**2)+(move_y**2))
+        runner_distance += seg_distance
+    
+        x_track.append(new_x)
+        y_track.append(new_y)
+        
+        speeds.append(speed)
+    
+        t += 0.001
+        
+    if write == 'W':
+        for i in range(1,len(x_track)):
+            player['track_x'].append(x_track[i])
+            player['track_y'].append(y_track[i])
+            
+    if write == 'R':
+        return(x_track,y_track)
+    
+    if write == 'B':
+        for i in range(1,len(x_track)):
+            player['track_x'].append(x_track[i])
+            player['track_y'].append(y_track[i])
+        return(x_track,y_track)
+"""
+
+def sine_route(player,time,write):  
+    x_vals = []
+    y_vals = []
+
+    route_dists = [0]
+    
+    runner_distance = 0
+
+    fulltime = time
+
+    t = 0
+
+    speeds = [player['current speed'][-1]]
+
+    x_track = [player['track_x'][-1]]
+    y_track = [player['track_y'][-1]]
+    z_track = [player['height']]
+
+    start = [player['track_x'][-1],player['track_y'][-1]]
+    
+    if player['track_x'][-1] < 25:
+        #x_dir = 1
+        end_x = 48
+    else:
+        #x_dir = -1
+        end_x = 2
+    
+    end = [end_x,104]
+
+    for i in numpy.arange(0,pi,0.001):
+    
+        y_range = (end[1] - start[1]) 
+        x_range = (end[0] - start[0])
+    
+        y = start[1] + (y_range) * (1+(sin(i-pi/2)))/2
+    
+        x = start[0] + (i/pi)*x_range#*x_dir
+    
+    #y = y_range + (y_range/2)* sin((pi*x/(2*x_range))+(x_range/2))
+    
+    
+        if i >= 0.001:
+            a = [x,y]
+            b = [x_vals[-1],y_vals[-1]]
+            
+            dist = side_length(a,b)
+            route_dists.append(dist)
+        
+        x_vals.append(x)
+        y_vals.append(y)
+        
+    while t < fulltime:
+    
+        target = pull_target(speeds,runner_distance,route_dists,x_vals,y_vals)
+
+        if len(player['track_x']) <= 2:
+            acc = 1
+        else:
+            prev_one = [x_track[-1],y_track[-1]]
+            prev_two = [x_track[-2],y_track[-2]]
+            acc = acc_factor(player,target,prev_one,prev_two)
+        
+        x_disp = target[0] - x_track[-1]
+        y_disp = target[1] - y_track[-1]
+    
+        if x_disp > 0:
+            x_value = 1
+        if x_disp < 0:
+            x_value = -1
+        if y_disp > 0:
+            y_value = 1
+        if y_disp < 0:
+            y_value = -1
+    
+        if x_disp == 0:
+            x_comp = 0
+            x_value = 0
+            y_comp = 1
+        elif y_disp == 0:#don't strictly need, but whatever.
+            x_comp = 1
+            y_comp = 0
+            y_value = 0
+        elif x_disp == 0 and y_disp == 0:
+            x_comp = 0
+            x_value = 0
+            y_comp = 0
+            y_value = 0
+        else:
+            angle = atan(abs(y_disp)/abs(x_disp))
+            x_comp = cos(angle)
+            y_comp = sin(angle)
+        
+        speed = speed_func(player,speeds[-1],acc,time_interval)
+    
+        move_x = speed * x_comp * x_value * time_interval
+        move_y = speed * y_comp * y_value * time_interval
+    
+        new_x = x_track[-1] + move_x
+        new_y = y_track[-1] + move_y
+    
+        seg_distance = sqrt((move_x**2)+(move_y**2))
+        runner_distance += seg_distance
+    
+        x_track.append(new_x)
+        y_track.append(new_y)
+        z_track.append(player['height'])
+        
+        speeds.append(speed)
+    
+        t += 0.001
+        
+    if write == 'W':
+        for i in range(1,len(x_track)):
+            player['track_x'].append(x_track[i])
+            player['track_y'].append(y_track[i])
+            player['track_z'].append(z_track[i])
+            
+    if write == 'R':
+        return(x_track,y_track,z_track)
+    
+    if write == 'B':
+        for i in range(1,len(x_track)):
+            player['track_x'].append(x_track[i])
+            player['track_y'].append(y_track[i])
+            player['track_z'].append(z_track[i])
+        return(x_track,y_track,z_track)
+
 
 """DEPENDENT PLAYS"""
 

@@ -54,6 +54,12 @@ def wr_route_gen(wr_one,wr_two,time):
         wr_two_coord = [wr_two['track_x'][-1],102]
         wr_two_x,wr_two_y,wr_two_z = pf.p_to_p_in_t(time,wr_two,wr_two_coord,'B')
         
+    if wr_one['status'][-1] == 'Sine':
+        wr_one_x,wr_one_y,wr_one_z = pf.sine_route(wr_one,time,'B')
+        
+    if wr_two['status'][-1] == 'Sine':
+        wr_two_x,wr_two_y,wr_two_z = pf.sine_route(wr_two,time,'B')
+        
     return(wr_one_x,wr_one_y,wr_one_z,wr_two_x,wr_two_y,wr_two_z)    
 
 def qb_inputs(qb):

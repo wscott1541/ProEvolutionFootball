@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
@@ -417,11 +416,11 @@ except could start with catchval = 0, append to catchval and remove
 #time_c = AFF.quad_greater(-g,u,-s)
 #print(time_c)
 
-import matplotlib.pyplot as plt
-import numpy
+#import matplotlib.pyplot as plt
+#import numpy
 #import AmericanFootballFunctionsv2 as AFF
 
-from math import sin, cos, atan
+#from math import sin, cos, atan
 
 #def point_to_point(start,objective,speed,time):
     
@@ -587,7 +586,7 @@ def p_to_p(start,objective,speed):
     return(x_vals,y_vals,time)
 
 """
-from math import sqrt, pi, tan
+#from math import sqrt, pi, tan
 """
 def p_to_stop(start,objective,speed,time):
     
@@ -704,7 +703,7 @@ plt.plot(x_bs,y_bs,color='blue')
 #a.append(b)
 #print(a)
 
-import AmericanFootballFunctionsv5 as AFF
+#import AmericanFootballFunctionsv5 as AFF
 """
 def add_to_zeroth(a,b):
     new_zero = a[0] + b
@@ -1441,7 +1440,7 @@ print(a_thr_d)
 print(s)
 
 """
-
+"""
 #import playerdeets as deets
 
 #safety,linebacker = deets.defense
@@ -1484,13 +1483,403 @@ print(s)
 
 #print(runner)
 
-qb = ['qb',1.84,[25,-2]]
+#qb = ['qb',1.84,[25,-2]]
 
-time = AFF.time_to_ground(qb,38,7)
+#time = AFF.time_to_ground(qb,38,7)
 
-xs,ys,zs = AFF.throws(time,38,qb,54,7,'L')
+#xs,ys,zs = AFF.throws(time,38,qb,54,7,'L')
 
-print(time)
+#print(time)
 
-print(AFF.last_val(xs))
-print(AFF.last_val(ys))
+#print(AFF.last_val(xs))
+#print(AFF.last_val(ys))
+#time = 1.5
+#linebacker = AFF.player_details('LB',1.5,5,2,4,0.75,0.75)
+#lb_pos = [27,4]
+#linebacker.append(lb_pos)
+
+#xs, ys, zs = AFF.p_to_stop(time,linebacker,[5,AFF.last_val(linebacker)[1]])
+
+#plt.plot(xs,ys)
+
+#AFF.finalise_deets(linebacker,time,xs,ys)
+#print(linebacker)
+
+#xs, ys, zs = AFF.p_to_stop(time,linebacker,[AFF.last_val(linebacker)[0],8])
+
+#plt.plot(xs,ys)
+
+#AFF.finalise_deets(linebacker,time,xs,ys)
+#print(linebacker)
+
+#xs, ys, zs = AFF.p_to_stop(time,linebacker,[20,18])
+
+#plt.plot(xs,ys)
+
+#AFF.finalise_deets(linebacker,time,xs,ys)
+#print(linebacker)
+
+#gravity = 9.80665
+#ballspeed = 38
+#vangle = 7 * pi/180
+#qb_height = 1.84
+
+#a = -gravity/2
+#b = ballspeed * sin(vangle)
+#c = qb_height
+
+#print(a)
+#print(b)
+#print(c)
+#print(4 * a * c)
+
+#print(AFF.quad_one(a,b,c))
+#print(AFF.quad_two(a,b,c))
+#print(AFF.quad_greater(a,b,c))
+
+time_interval = 0.001
+
+def slant_to_vert(time,runner,turn):
+    x_disp = turn[0] - AFF.last_val(runner)[0]
+    y_disp = turn[1] - AFF.last_val(runner)[1]
+    
+    if x_disp > 0:
+        x_value = 1
+    if x_disp < 0:
+        x_value = -1
+    if y_disp > 0:
+        y_value = 1
+    if y_disp < 0:
+        y_value = -1
+    
+    if x_disp == 0:
+        x_comp = 0
+        x_value = 0
+        y_comp = 1
+    elif y_disp == 0:#don't strictly need, but whatever.
+        x_comp = 1
+        y_comp = 0
+        y_value = 0
+    elif x_disp == 0 and y_disp == 0:
+        x_comp = 0
+        x_value = 0
+        y_comp = 0
+        y_value = 0
+    else:
+        angle = atan(abs(y_disp)/abs(x_disp))
+        x_comp = cos(angle)
+        y_comp = sin(angle)
+    
+    x_vals = []
+    y_vals = []
+    z_vals = []
+    
+    slant_times = []
+    
+    t_sta = 0
+    t_fin = time + time_interval
+    for t in numpy.arange(t_sta,t_fin,time_interval):
+        speed = AFF.speed_func(runner,t)
+        move_x = x_value * x_comp * speed * t
+        new_x = AFF.last_val(runner)[0] + move_x
+        if abs(move_x) <= abs(x_disp):
+            x_vals.append(new_x)
+            slant_times.append(t)
+        else:
+            x_val = turn[0]
+            x_vals.append(x_val)
+            
+        move_y = y_value * y_comp * speed * t
+        new_y = AFF.last_val(runner)[1] + move_y
+        if abs(move_y) <= abs(y_disp):
+            y_vals.append(new_y)
+        else:
+            y_val = turn[1] + speed * (t - AFF.last_val(slant_times))
+            y_vals.append(y_val)
+            
+        z_val = runner[1] * (2/3)
+        z_vals.append(z_val)
+    return(x_vals,y_vals,z_vals)
+"""
+"""
+rb = ['Name', 1.5, [1], 0]
+rb_position = [20,-4]
+rb.append(rb_position)
+turn_position = [18,-2]
+xs,ys,zs = slant_to_vert(3,rb,turn_position)
+
+plt.plot(xs,ys)
+"""
+"""
+
+L = []
+positions = [30,20]
+L.append(tuple(positions))
+new = tuple(L)
+
+L = [1,2,3,4]
+L.insert(0,(0,0))
+#print(L)
+
+prov_throws = [(0,0),(0,0),(1,1),(2,2)]
+
+tupled_throws = tuple(prov_throws)
+#print(tupled_throws)
+#print(prov_throws[1:3])
+
+#L = [1, 2, 3, 4, 5, 6]
+# Create an iterator
+#grouped_l = iter(L)
+
+#print(grouped_l)
+# zip the iterator with itself
+#zip(it, it)
+#[(1, 'term1'), (3, 'term2'), (4, 'term3'), (5, 'termN')]
+
+#string = '12345'
+#print(string[-2:])
+
+#test_list = [0,1,2,3,4]
+#test_list.reverse()
+#print(test_list)
+
+#print(str(2))
+
+from time import time,ctime
+
+t = time()
+time = ctime(t)
+
+#print(time)
+
+import datetime as dt
+
+d1 = dt.datetime.strptime('00:08:30','%H:%M:%S')
+d2 = dt.datetime.strptime('00:04:30','%H:%M:%S')
+
+dt1 = dt.timedelta(hours=d1.hour, minutes=d1.minute, seconds=d1.second)
+dt2 = dt.timedelta(hours=d2.hour, minutes=d2.minute, seconds=d2.second)
+
+#print(dt1+dt2)
+
+t1 = '00:08:30'
+
+t2 = '00:08:30'
+
+#print(float(t1[6:8]))
+
+n = 8.0
+#print(round(n))
+
+test = 'testing'
+#print(len(test))
+
+test_dates = [0,1,2,2,2,3,8,8,10,13]
+test_vals = [0,1,3,2,8,4,8,4,12,4]
+#print(test_dates)
+#print(test_vals)
+#print(len(test_dates))
+#print(len(test_vals))
+op_a = []
+op_b = []
+op_c = []
+op_d = []
+rang = 10
+counts = []
+val_vals = []
+"""
+"""
+for i in range(0,rang):
+    val = i + count - 1
+    val_vals.append(val)
+    if val + count - 1 != rang + count -1:
+        if test_dates[val] == test_dates[-1]:
+            test_dates.append(val+1)
+            test_vals.append(test_vals[-1])
+            op_a.append(i)
+        elif test_dates[val] == test_dates[val+1]:
+            count += 1
+            op_b.append(i)
+        elif test_dates[val+1] != val + 1:
+            test_dates.insert(val+1,val+1)
+            test_vals.insert(val+1,test_vals[val])
+            op_c.append(i)
+        else:
+            op_d.append(i)
+        counts.append(count)
+"""
+"""
+count = 0  
+rang = 15
+i = 0      
+while i < rang:
+    if test_dates[i] == test_dates[-1] and test_dates[i] != rang:
+        test_dates.append(i+1-count)
+        test_vals.append(test_vals[-1])
+        op_a.append(i)
+    elif test_dates[i] == test_dates[i+1]:
+        count += 1
+        rang += 1
+        op_b.append(i)
+    elif test_dates[i + 1] != i + 1 - count:
+        test_dates.insert(i + 1,i + 1 - count)
+        test_vals.insert(i + 1,test_vals[i])  
+        op_c.append(i)
+    else:
+        op_d.append(i)
+    i += 1
+
+#print(test_dates)
+#print(test_vals)
+#print(val_vals)
+#print(len(test_dates))
+#print(len(test_vals))
+#print('last: ',op_a)
+#print('skips: ',op_b)
+#print('inserts next: ',op_c)
+#print('nothing: ',op_d)
+#print(counts)
+
+month_1 = 2020 * 12 + 6
+month_2 = 2020 * 12 + 3
+
+def month_minus_one(m,yyyy):
+    month_val = yyyy * 12 + m - 1
+    new = divmod(month_val,12)
+    new_year = new[0]
+    new_month = new[1]
+    if new_month == 0:
+        new_year = yyyy - 1
+        new_month = 12
+    return(new_month,new_year)
+    
+def month_diff(m1,yyyy1,m2,yyyy2):
+    mon1 = yyyy1 * 12 + m1
+    mon2 = yyyy2 * 12 + m2
+    diff = mon1 - mon2
+    return(diff)
+"""    
+"""
+run_vals = []    
+for i in len(dates):
+    if 'Running' in types[i]:
+        run_vals.append(i)
+val = run_vals[-1]
+earliest_date = dates[val]
+"""
+"""
+date = '2020-08'
+print(round(float(date[:4])))
+print(round(float(date[5:7])))
+
+new_m, new_y = month_minus_one(1,2020)
+print(new_m,new_y)    
+
+dates = []
+print(len(dates))
+
+feb_dates = [0,5,7,7,9,10]
+feb_vals = [0,2,4,6,5,6]
+
+lim = 15
+count = 0
+i = 0      
+while i < lim:
+    prog = []
+    if feb_dates[-1] == feb_dates[-2] and feb_dates[-1] != lim:
+        feb_dates.append(feb_dates[-1]+1)
+        feb_vals.append(feb_vals[-1])
+    if feb_dates[i] == feb_dates[-1] and feb_dates[i] != lim:    
+        feb_dates.insert(i + 1,i+1-count)
+        feb_vals.insert(i + 1,feb_vals[-1])
+    elif feb_dates[i] == feb_dates[i+1]:
+        count += 1
+        lim += 1
+    elif feb_dates[i + 1] != i + 1 - count:
+        feb_dates.insert(i + 1,i + 1 - count)
+        feb_vals.insert(i + 1,feb_vals[i])
+    prog.append(i)
+    print(prog)
+    print(feb_dates)
+    i += 1
+
+print(feb_dates)
+print(feb_vals)
+print(len(feb_dates))
+print(len(feb_vals))
+
+import pandas as pd
+
+#data = []
+
+new_df = pd.DataFrame(columns= ['Activity Type','Date','Distance','Time'])
+
+row_one = ['Running','date',5,'10']
+a_row = pd.Series(row_one,index=new_df.columns)
+mod_df = new_df.append(a_row,ignore_index = True)
+new_df = mod_df.sort_values(by='Date')
+
+row_two = ['Running','date',12,'10']
+a_row = pd.Series(row_two,index=new_df.columns)
+mod_df = new_df.append(a_row,ignore_index = True)
+new_df = mod_df.sort_values(by='Date')
+
+print(new_df)
+
+from datetime import datetime
+
+today_string = '2020-06-05'
+
+latest_date_strp = datetime.strptime(today_string,'%Y-%m-%d')
+latest_date_object = datetime.timestamp(latest_date_strp)
+yester_date_object = latest_date_object - 24 * 60 * 60
+yester_dt = datetime.fromtimestamp(yester_date_object)
+yester_date_strp = datetime.strftime(yester_dt,'%Y-%m-%d')
+
+print(latest_date_object)
+print(yester_date_strp)
+
+time = 0.5
+runner = ['Runner',1,[3,0],1,[5,5]]
+objective = [1,5]
+
+xs,ys,zs = AFF.p_to_stop(time,runner,objective)
+
+plt.plot(xs,ys)
+print(len(xs))
+
+#data = pd.read_csv (r'Activities.csv')  
+file_name = "Confirmation.csv"
+data = pd.read_csv (r'{}'.format(file_name))
+df = pd.DataFrame(data, columns= ['Test date'])
+print(df)
+
+string = 'Will Scott'
+split_string = string.split()
+initial = string[0]
+print(split_string)
+print(initial)
+"""
+
+import play_functions as pf
+
+import numpy
+
+from math import sin, cos, atan, sqrt
+
+from players import odell
+
+runner = odell
+
+start = [5,15]
+runner['track_x'].append(start[0])
+runner['track_y'].append(start[1])
+
+pf.sine_route(runner,3,'W')
+    
+import matplotlib.pyplot as plt
+
+plt.plot(runner['track_x'],runner['track_y'])
+
+print(runner)
+#angle = acos(((len_a**2)+(len_b**2)-(len_c**2))/(2*len_a*len_b))
