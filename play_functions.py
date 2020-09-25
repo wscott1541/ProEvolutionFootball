@@ -110,16 +110,21 @@ def acc_factor(player,point,prev_one,prev_two):
     if player['side'] == 'D':
         val = angle * (2/pi)
     #val is between 0 and 2
+      
+    n = (val/2)
     
-    #if angle < (30 * pi/180):
-    #    val = val * (-1)
-    
-    n = (val/2) * (3.81 /player['shuttle'])
+    #n = 1
     
     return(n)  
 
 def speed_func(runner,latest_speed,acc_factor,time_step):
-    speed = latest_speed + runner['acc'] * time_step * acc_factor
+    if acc_factor < 0.05:
+        speed = 0 + runner['acc'] * time_step * acc_factor * (3.81 /runner['shuttle'])
+    elif acc_factor == 1:
+        speed = latest_speed + runner['acc'] * time_step
+    else:
+        speed = latest_speed + runner['acc'] * time_step * acc_factor * (3.81 /runner['shuttle'])
+    
     if speed > runner['speed']:
         new_speed = runner['speed']
     else:
@@ -273,6 +278,9 @@ def time_to_point(player,objective,arm=0):
     
     full_distance = side_length(player_position,objective) - arm
     
+    x_vals = [player['track_x'][-1]]
+    y_vals = [player['track_y'][-1]]
+    
     #print(player['name'])
     #print(full_distance)
     
@@ -306,38 +314,61 @@ def time_to_point(player,objective,arm=0):
         x_comp = abs(cos(angle))
         y_comp = abs(sin(angle))
                         
-        temp_x = player_position[0] + x_value * x_comp * 3
-        temp_y = player_position[1] + y_value * y_comp * 3
-        point = [temp_x,temp_y]
+    temp_x = player_position[0] + x_value * x_comp * 3
+    temp_y = player_position[1] + y_value * y_comp * 3
+    point = [temp_x,temp_y]
         
-    
     distance_run = 0
     
-    time = 0
+    start = 0
+    
+    #time = 0
     
     speeds = [player['current speed'][-1]]
+    #need to convert to constant acceleration
+    #distance = ut + 1/2*at^2
     
-    while distance_run < full_distance:
-        if len(player['track_x']) < 2:
-            acc = 1
-        else:        
-            prev_pos = [player['track_x'][-2],player['track_y'][-2]]
-            acc = acc_factor(player,point,player_position,prev_pos)
+    if len(player['track_x']) < 2:
+        acc = 1
+    else:        
+        prev_pos = [player['track_x'][-2],player['track_y'][-2]]
+        acc = acc_factor(player,point,player_position,prev_pos)
         
-        speed = speed_func(player,speeds[-1],acc,time_interval)
-        
-        speeds.append(speed)
-        
-        dist = speed * time_interval
-        
-        time += time_interval
+    init_speed = speed_func(player,speeds[-1],acc,time_interval)
+    init_dist = init_speed * time_interval
+    disp = full_distance - init_dist
+    accel = player['acc']/2
+    
+    #disp = ut + 1/2at^2
+    #1/2at^2 + ut - disp
+    
+    quad = quad_greater(accel,init_speed,-disp)
+    
+    time = round(quad,rounding)
+    #print(player['name'])
+    #while distance_run < full_distance:
+    #    if len(player['track_x']) < 2 or start > 0:
+    #        acc = 1
+    #    else:        
+    #        prev_pos = [player['track_x'][-2],player['track_y'][-2]]
+    #        acc = acc_factor(player,point,player_position,prev_pos)
+    #    
+    #    speed = speed_func(player,speeds[-1],acc,time_interval)
+    #    
+    #    speeds.append(speed)
+    #    
+    #    dist = speed * time_interval
+        #print(player['name'],': ',dist)
+    #    time += time_interval
         #print('time: ',time)
-        distance_run += dist
+    #    distance_run += dist
+    #    print(player['name'],': ',distance_run,'/',full_distance)
+        
+    #    start += 1
         #print('dist: ',distance_run)
         
     return(time)
     
-
 
 def off_catch(player,ball_arrays):
     
@@ -535,6 +566,8 @@ def catch_outcomes(possessor,coordinates,time,
                    s,
                    lb):
     
+    print('Throwing the football')
+    
     if possessor['name'] == [wr_one]['name']:
         wr_one_t_x, wr_one_t_y, wr_one_t_z = p_to_p_in_t(time,wr_one,coordinates,'B')
                     
@@ -564,6 +597,7 @@ def miss_outcomes(throw_side,coordinates,time,
                    s,
                    lb):
     
+    print('Throwing the football')
     
     if (wr_one['track_x'][-1] > 20 and throw_side == 'R') or (wr_one['track_x'][-1] < 30 and throw_side == 'L'):
         p_to_p_in_t(time,wr_one,coordinates,'Y')
@@ -749,6 +783,8 @@ def line_template(player,time,write):
         return(x_track,y_track)
 """
 
+import matplotlib.pyplot as plt
+
 def sine_route(player,time,write):  
     x_vals = []
     y_vals = []
@@ -778,7 +814,7 @@ def sine_route(player,time,write):
     
     end = [end_x,104]
 
-    for i in numpy.arange(0,pi,0.001):
+    for i in numpy.arange(0,pi,pi/100):
     
         y_range = (end[1] - start[1]) 
         x_range = (end[0] - start[0])
@@ -789,19 +825,81 @@ def sine_route(player,time,write):
     
     #y = y_range + (y_range/2)* sin((pi*x/(2*x_range))+(x_range/2))
     
-    
-        if i >= 0.001:
+        if i >= pi/100:
             a = [x,y]
             b = [x_vals[-1],y_vals[-1]]
+            #print('a',a)
+            #print('b',b)
             
-            dist = side_length(a,b)
-            route_dists.append(dist)
+            dist = sqrt(((a[0] - b[0])**2) + ((a[1] - b[1])**2))
+            
+            full_d = dist + route_dists[-1]
+           
+            route_dists.append(full_d)
         
         x_vals.append(x)
         y_vals.append(y)
-        
-    while t < fulltime:
     
+    #plt.plot(x_vals,y_vals)
+    #plt.show()
+    
+    #print(route_dists)
+    #print(len(route_dists))
+    #print(route_dists[-1])
+    #print(len(x_vals))
+    
+    while t < fulltime:
+        target = [x_track[-1],y_track[-1]]
+        #pull_target(speeds,runner_distance,route_dists,x_vals,y_vals)
+        
+        if len(x_track) <= 3:
+            acc = 1
+        else:
+            prev_one = [x_track[-2],y_track[-2]]
+            prev_two = [x_track[-3],y_track[-3]]
+            acc = acc_factor(player,target,prev_one,prev_two)
+        
+        #print('track',len(x_track))
+        #print(acc)
+        
+        speed = speed_func(player,speeds[-1],acc,time_interval)
+        #print(speed)
+        
+        seg_dist = speed * time_interval
+        runner_distance += seg_dist
+        #print(runner_distance)
+        
+        speeds.append(speed)
+        
+        #temp_xs = []
+        #temp_ys = []
+        mark = 0
+        for i in range(0,len(route_dists)):
+            #mark = 0
+            #temp_xs = []
+            #temp_ys = []
+            if route_dists[i] > runner_distance and mark == 0:
+                x_track.append(x_vals[i-1])
+                y_track.append(y_vals[i-1])
+                z_track.append(player['height'])
+            #    y_track.append(temp_ys[0])
+                #temp_xs.append(x_vals[i-1])
+                #temp_ys.append(y_vals[i-1])
+                mark = 1
+            #if mark == 1:
+            #    x_track.append(temp_xs[0])
+            #    y_track.append(temp_ys[0])
+            #    z_track.append(player['height'])
+                
+        #x_track.append(temp_xs[-1])
+        #y_track.append(temp_ys[-1])
+        
+        
+        #print(temp_xs[-1])
+        
+        t += time_interval
+        
+        """
         target = pull_target(speeds,runner_distance,route_dists,x_vals,y_vals)
 
         if len(player['track_x']) <= 2:
@@ -859,7 +957,10 @@ def sine_route(player,time,write):
         speeds.append(speed)
     
         t += 0.001
-        
+        """
+    
+    #print(len(x_track))    
+    
     if write == 'W':
         for i in range(1,len(x_track)):
             player['track_x'].append(x_track[i])
@@ -961,26 +1062,24 @@ def p_to_p_in_t(time,player,objective,write):
         return(x_vals,z_vals,y_vals)
     
 def point_to_chase(time,chaser,chase_arrays,write):
-    t_sta = 0
-    t_fin = time
-    full_time = []
-    for t in numpy.arange(t_sta,t_fin,time_interval):
-        full_time.append(t)
-    length = len(full_time)
+    #t_sta = 0
+    #t_fin = time
+    #full_time = []
+    #for t in numpy.arange(t_sta,t_fin,time_interval):
+    #    full_time.append(t)
+    #length = len(full_time)
     x_vals = [chaser['track_x'][-1]]
     y_vals = [chaser['track_y'][-1]]
     z_vals = [chaser['height'] * (2/3)]
     
-    if len(chaser['track_x']) < 2:
+    if len(x_vals) < 2:
         pos_checks = [[x_vals[0],y_vals[0]]]
     else: 
         pos_checks = [[chaser['track_x'][-2],chaser['track_y'][-2]],[chaser['track_x'][-1],chaser['track_y'][-1]]]
     
     speeds = [chaser['current speed'][-1]]
-    
-    speeds = [chaser['current speed'][-1]]
 
-    for i in range(1,length):
+    for i in range(1,len(chase_arrays[0])):
         x_disp = chase_arrays[0][i] - x_vals[(i - 1)]
         y_disp = chase_arrays[1][i] - y_vals[(i - 1)]
         
@@ -991,7 +1090,7 @@ def point_to_chase(time,chaser,chase_arrays,write):
         if y_disp > 0:
             y_value = 1
         if y_disp < 0:
-            y_value = -1
+            y_value = +1
         
         if x_disp == 0:
             x_comp = 0
@@ -1011,8 +1110,8 @@ def point_to_chase(time,chaser,chase_arrays,write):
             x_comp = abs(cos(angle))
             y_comp = abs(sin(angle))
             
-        if len(chaser['track_x']) < 2:
-            speed = speed_func(chaser,speeds[-1],1,t)
+        if len(x_vals) < 2:
+            speed = speed_func(chaser,speeds[-1],1,time_interval)
         else:
             temp_x = x_vals[-1] + x_value * x_comp * 3
             temp_y = y_vals[-1] + y_value * y_comp * 3
@@ -1027,6 +1126,11 @@ def point_to_chase(time,chaser,chase_arrays,write):
         y_vals.append(move_y)
         z_val = chaser['height'] * (2/3)
         z_vals.append(z_val)
+        
+        new_point = [move_x,move_y]
+        pos_checks.append(new_point)
+        
+        speeds.append(speed)
     
     if write == 'Y':
         append_track_speed(chaser,speeds,x_vals,y_vals,z_vals)

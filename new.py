@@ -74,16 +74,14 @@ def play(offense,o_colour,defense,d_colour,position,mtg):
     lb_position = [25,(position[1]+10)]
     pf.add_position_to_track(lb,lb_position)
     
-    
     s_position = [25,(position[1]+20)]
     pf.add_position_to_track(s,s_position)
-    
-    
+        
     cb_one_position = [wr_one['track_x'][0],position[1]+5]
     cb_two_position = [wr_two['track_x'][0],position[1]+5]
     pf.add_position_to_track(cb_one,cb_one_position)
     pf.add_position_to_track(cb_two,cb_two_position)
-    
+
     snap_x,snap_y,snap_z = pf.snap(origin,qb)
     tsnap = pf.snap_time(origin,qb)
     
@@ -99,7 +97,9 @@ def play(offense,o_colour,defense,d_colour,position,mtg):
         sack_val = 0
     
         if sack_val == 0:
-        
+            
+            print('Snapping the football')
+            
             t_pre = thold+tsnap
             
             qb_x,qb_y,qb_z = pf.verts(thold,qb,-1)
@@ -110,12 +110,15 @@ def play(offense,o_colour,defense,d_colour,position,mtg):
             
             pf.point_to_chase(t_pre,cb_one,[wr_one_x,wr_one_y],'Y')
             pf.point_to_chase(t_pre,cb_two,[wr_two_x,wr_two_y],'Y')
-    
+            
+            print(cb_one['current speed'])
+            
             tground = pf.time_to_ground(qb,ballspeed,vangle)
             
             p_throw_x, p_throw_y, p_throw_z = pf.throws(tground,ballspeed,qb,hangle,vangle,throw_side)
             p_ball = [p_throw_x, p_throw_y, p_throw_z]
             
+            print('Assessing the throw')
             tthrow,t_end,possessor,cont_val = pf.throw_react(p_ball,throw_side,
                 wr_one,
                 wr_two,
