@@ -77,8 +77,8 @@ def play(offense,o_colour,defense,d_colour,position,mtg):
     s_position = [25,(position[1]+20)]
     pf.add_position_to_track(s,s_position)
         
-    cb_one_position = [wr_one['track_x'][0],position[1]+5]
-    cb_two_position = [wr_two['track_x'][0],position[1]+5]
+    cb_one_position = [wr_one['track_x'][0]+0.2,position[1]+5]
+    cb_two_position = [wr_two['track_x'][0]+0.2,position[1]+5]
     pf.add_position_to_track(cb_one,cb_one_position)
     pf.add_position_to_track(cb_two,cb_two_position)
 
@@ -111,7 +111,7 @@ def play(offense,o_colour,defense,d_colour,position,mtg):
             pf.point_to_chase(t_pre,cb_one,[wr_one_x,wr_one_y],'Y')
             pf.point_to_chase(t_pre,cb_two,[wr_two_x,wr_two_y],'Y')
             
-            print(cb_one['current speed'])
+            #print(cb_one['current speed'])
             
             tground = pf.time_to_ground(qb,ballspeed,vangle)
             

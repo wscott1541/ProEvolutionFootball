@@ -783,7 +783,7 @@ def line_template(player,time,write):
         return(x_track,y_track)
 """
 
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
 def sine_route(player,time,write):  
     x_vals = []
@@ -1054,14 +1054,14 @@ def p_to_p_in_t(time,player,objective,write):
         append_track_speed(player,speeds,x_vals,y_vals,z_vals)
     
     if write == 'N':
-        return(x_vals,z_vals,y_vals)
+        return(x_vals,y_vals,z_vals)
         
     if write == 'B':
         append_track_speed(player,speeds,x_vals,y_vals,z_vals)
         
-        return(x_vals,z_vals,y_vals)
+        return(x_vals,y_vals,z_vals)
     
-def point_to_chase(time,chaser,chase_arrays,write):
+def point_to_chase(chaser,chase_arrays,write):
     #t_sta = 0
     #t_fin = time
     #full_time = []
@@ -1090,9 +1090,14 @@ def point_to_chase(time,chaser,chase_arrays,write):
         if y_disp > 0:
             y_value = 1
         if y_disp < 0:
-            y_value = +1
+            y_value = -1
         
-        if x_disp == 0:
+        if x_disp == 0 and y_disp == 0:
+            x_comp = 0
+            x_value = 0
+            y_comp = 0
+            y_value = 0
+        elif x_disp == 0:
             x_comp = 0
             x_value = 0
             y_comp = 1
@@ -1100,11 +1105,7 @@ def point_to_chase(time,chaser,chase_arrays,write):
             x_comp = 1
             y_comp = 0
             y_value = 0
-        elif x_disp == 0 and y_disp == 0:
-            x_comp = 0
-            x_value = 0
-            y_comp = 0
-            y_value = 0
+        
         else:
             angle = atan(y_disp/x_disp)
             x_comp = abs(cos(angle))
