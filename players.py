@@ -119,7 +119,7 @@ chubb = player_details('Nick Chubb','O',1.8,4.52,1.62,2.67,0.81,0.98,4.25)
 hooper = player_details('Austin Hooper','O',1.92,4.72,1.63,2.75,0.86,0.84,4.32)
 baker = qb_details('Baker Mayfield',1.84)
 
-browns_offense = offense_details('Cleveland Browns','red','black',baker,odell,jarvis,chubb,hooper)
+browns_offense = offense_details('Cleveland Browns','saddlebrown','black',baker,odell,jarvis,chubb,hooper)
 
 """Jacksonville Jaguars"""
 
@@ -152,15 +152,29 @@ ahkello = player_details('Ahkello Witherspoon','D',1.9,4.45,1.53,2.57,0.84,1.03,
 
 niners_defense = defense_details('San Francisco 49ers','red','white',n_bosa,warner,ward,sherman,ahkello)
 
-def choose_teams():
-    offense_choice = input('Select offensive team: ')
-    
-    if offense_choice == 'Browns':
-        offense = browns_offense
+off_list = [browns_offense,jags_offense]
+def_list = [rams_defense,niners_defense]
 
-    defense_choice = input('Select defensive team: ')
+def choose_teams(default=True):
+    if default == True:
+        offense_choice = input('Select offensive team: ')
     
-    if defense_choice == '49ers':
+        if 'leveland' in offense_choice or 'rowns' in offense_choice:
+            offense = browns_offense
+        
+        if 'acksonville' in offense_choice or 'aguars' in offense_choice:
+            offense = jags_offense
+
+        defense_choice = input('Select defensive team: ')
+    
+        if 'rancisco' in defense_choice or '49ers' in defense_choice:
+            defense = niners_defense
+        
+        if 'ams' in defense_choice:
+            defense = rams_defense
+    
+    else:
+        offense = jags_offense
         defense = niners_defense
     
     offense_colour = offense['colour A']
@@ -171,9 +185,6 @@ def choose_teams():
         defense_colour = defense['colour A']
     
     return(offense,offense_colour,defense,defense_colour)
-    
-off_list = [browns_offense,jags_offense]
-def_list = [rams_defense,niners_defense]
 
 def teams_list(side,teams_list):
     

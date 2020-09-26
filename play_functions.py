@@ -131,10 +131,10 @@ def speed_func(runner,latest_speed,acc_factor,time_step):
         new_speed = speed
     return(new_speed)
 
-def add_position_to_track(player,position):
+def set_track_position(player,position):
     
-    player['track_x'].append(position[0])
-    player['track_y'].append(position[1])
+    player['track_x'] = [position[0]]
+    player['track_y'] = [position[1]]
     
 #def speed_func(runner,time_val):
 #    speed = runner['current speed'][-1] + runner['acc'] * time_val
@@ -337,6 +337,8 @@ def time_to_point(player,objective,arm=0):
     init_speed = speed_func(player,speeds[-1],acc,time_interval)
     init_dist = init_speed * time_interval
     disp = full_distance - init_dist
+    if full_distance < init_dist:
+        disp = abs(disp)
     accel = player['acc']/2
     
     #disp = ut + 1/2at^2
@@ -1061,7 +1063,7 @@ def p_to_p_in_t(time,player,objective,write):
         
         return(x_vals,y_vals,z_vals)
     
-def point_to_chase(chaser,chase_arrays,write):
+def point_to_chase(time,chaser,chase_arrays,write):
     #t_sta = 0
     #t_fin = time
     #full_time = []

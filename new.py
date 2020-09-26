@@ -34,7 +34,8 @@ def pull_defense(defense):
     
     return(edgerusher,linebacker,safety,corner_one,corner_two)
 
-def play(offense,o_colour,defense,d_colour,position,mtg):
+
+def play(offense,o_colour,defense,d_colour,position,mtg,down):
 
     origin = position
     
@@ -49,20 +50,20 @@ def play(offense,o_colour,defense,d_colour,position,mtg):
     qb_y = gi.qb_inputs(qb) + origin[1]
     qb_position = [origin[0],qb_y]
     
-    pf.add_position_to_track(qb,qb_position)
+    pf.set_track_position(qb,qb_position)
         
     gi.wr_inputs(wr_one,wr_two,origin)
 
     rb_position = [(origin[0]-3),(origin[1]-7)]
-    pf.add_position_to_track(rb,rb_position)
+    pf.set_track_position(rb,rb_position)
     
     
     te_position = [origin[0]+6,origin[1]]
-    pf.add_position_to_track(te,te_position)
+    pf.set_track_position(te,te_position)
 
     
     edge_position = [origin[0]-6,origin[1]]
-    pf.add_position_to_track(edge,edge_position)
+    pf.set_track_position(edge,edge_position)
     
     lb_action_ran = 1#random.randint(0,2)
     if lb_action_ran == 0:
@@ -72,15 +73,15 @@ def play(offense,o_colour,defense,d_colour,position,mtg):
     
     lb['status'].append(lb_action)
     lb_position = [25,(position[1]+10)]
-    pf.add_position_to_track(lb,lb_position)
+    pf.set_track_position(lb,lb_position)
     
     s_position = [25,(position[1]+20)]
-    pf.add_position_to_track(s,s_position)
+    pf.set_track_position(s,s_position)
         
     cb_one_position = [wr_one['track_x'][0]+0.2,position[1]+5]
     cb_two_position = [wr_two['track_x'][0]+0.2,position[1]+5]
-    pf.add_position_to_track(cb_one,cb_one_position)
-    pf.add_position_to_track(cb_two,cb_two_position)
+    pf.set_track_position(cb_one,cb_one_position)
+    pf.set_track_position(cb_two,cb_two_position)
 
     snap_x,snap_y,snap_z = pf.snap(origin,qb)
     tsnap = pf.snap_time(origin,qb)
@@ -104,7 +105,7 @@ def play(offense,o_colour,defense,d_colour,position,mtg):
             
             qb_x,qb_y,qb_z = pf.verts(thold,qb,-1)
             qb_pos = [qb_x[-1],qb_y[-1]]
-            pf.add_position_to_track(qb,qb_pos)
+            pf.set_track_position(qb,qb_pos)
     
             wr_one_x,wr_one_y,wr_one_z,wr_two_x,wr_two_y,wr_two_z = gi.wr_route_gen(wr_one,wr_two,t_pre)    
             
@@ -161,27 +162,49 @@ def play(offense,o_colour,defense,d_colour,position,mtg):
                     s,
                     lb)
                 
+            if possessor == 'NONE':
+                down += 1
+                possession = 1
+                mtg = mtg
+            elif possessor['side'] == 'D':
+                possession = 0
+            elif possessor['side'] == 'O':
+                possession = 1
+                y_position = int(possessor['y_track'][-1])
+                position = [25,y_position,0]
+                if position[1] > origin[1] + mtg:
+                    mtg = 10
+                    down = 1
+                else:
+                    new_mtg = mtg - (position[1]-origin[1])
+                    mtg = new_mtg
+                    down += 1
+                
+                
         
     #holds = [qb_x, qb_y, qb_z]
     
-    
     pf.plot_lines(o_colour,d_colour,origin,snaps,qb,throws,wr_one,wr_two,cb_one,cb_two,lb,s)
+    
+    return(down, mtg, possession, position)
     
     
 
 """Run the function"""
 
-import players
+#import players
 
-offense = players.browns_offense
-defense = players.niners_defense
+#offense,offense_colour,defense,defense_colour = players.choose_teams(False)
 
-down = 1
-possession = 1
-position = [25,20,0] #[x,y,z] format
-mtg = 10  
+#offense = players.jags_offense
+#defense = players.niners_defense
 
-play(offense,'red',defense,'white',position,mtg)    
+#down = 1
+#possession = 1
+#position = [25,20,0] #[x,y,z] format
+#mtg = 10  
+
+#down, mtg, possession, position = play(offense,offense_colour,defense,defense_colour,position,mtg,down)    
     
 """THROW"""
 """

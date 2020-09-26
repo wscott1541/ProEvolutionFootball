@@ -7,7 +7,7 @@ Created on Sat Sep 12 13:34:11 2020
 """
 
 print("""Route options include: 
-WR: Vert""")
+WR: Vert, Sine""")
     
 from math import pi
 import play_functions as pf
@@ -31,8 +31,8 @@ def wr_inputs(wr_one,wr_two,position):
     
     #wr_one['track_x'].append(wr_one_x)
     
-    pf.add_position_to_track(wr_one,wr_one_pos)
-    pf.add_position_to_track(wr_two,wr_two_pos)
+    pf.set_track_position(wr_one,wr_one_pos)
+    pf.set_track_position(wr_two,wr_two_pos)
     
 
 def wr_route_options(wr_one,wr_two):
