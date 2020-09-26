@@ -8,9 +8,13 @@ Created on Sat Sep 12 11:49:48 2020
 """
 
 """Per Wiki, Pro Football Reference, nflcombineresults.com
+
 https://matplotlib.org/3.1.0/gallery/color/named_colors.html
+
 20-yard shuttle record: 3.81s, avg 4.25
 (https://www.reddit.com/r/NFL_Draft/comments/81snap/looking_at_this_years_rbs_3cone_and_20yard/)"""
+
+from player_scrape import wiki_details
 
 avg_s = 4.28
 #track = {'x':[],
@@ -117,16 +121,6 @@ baker = qb_details('Baker Mayfield',1.84)
 
 browns_offense = offense_details('Cleveland Browns','red','black',baker,odell,jarvis,chubb,hooper)
 
-"""San Francisco 49ers"""
-
-n_bosa = player_details('Nick Bosa','D',1.92,4.79,4.79,4.79,0.84,0.85,4.14)
-warner = player_details('Fred Warner','D',1.91,4.64,1.55,2.65,0.81,0.98,4.28)
-ward = player_details('Jimmie Ward','D',1.79,4.47,1.56,2.54,0.79,0.97,4.24)
-sherman = cb_details('Richard Sherman',1.9,4.56,1.61,2.65,0.81,0.97,62.3,4.33)
-ahkello = cb_details('Ahkello Witherspoon',1.9,4.45,1.53,2.57,0.84,1.03,56.6,4.13)
-
-niners_defense = defense_details('San Francisco 49ers','red','white',n_bosa,warner,ward,sherman,ahkello)
-
 """Jacksonville Jaguars"""
 
 minshew = qb_details('Gardner Minshew',1.85)
@@ -136,6 +130,27 @@ eifert = player_details('Tyler Eifert','O',1.97,4.68,1.65,2.69,0.84,0.9,4.34)
 robinson = player_details('James Robinson','O',1.75,4.64,1.61,2.71,0.75,1.02,4.19)
 
 jags_offense = offense_details('Jacksonville Jaguars','teal','black',minshew,chark,westbrook,eifert,robinson)
+
+"""LA Rams"""
+
+donald = player_details('Aaron Donald','D',1.85,4.68,1.59,3.21,0.83,0.81,4.39)
+floyd = player_details('Leonard Floyd','D',1.97,4.6,1.59,2.68,0.84,1.0,4.32)
+johnson = player_details('John Johnson','D',1.84,4.61,1.58,2.66,0.81,0.94,4.18)
+ramsey = player_details('Jalen Ramsey','D',1.86,4.41,1.51,2.57,0.85,1.05,4.18)
+hill = player_details('Troy Hill','D',1.78,4.55,2.66,1.6,0.75,0.83,4.21)
+
+rams_defense = defense_details('LA Rams','mediumblue','white',donald,floyd,johnson,ramsey,hill)
+
+
+"""San Francisco 49ers"""
+
+n_bosa = player_details('Nick Bosa','D',1.92,4.79,4.79,4.79,0.84,0.85,4.14)
+warner = player_details('Fred Warner','D',1.91,4.64,1.55,2.65,0.81,0.98,4.28)
+ward = player_details('Jimmie Ward','D',1.79,4.47,1.56,2.54,0.79,0.97,4.24)
+sherman = player_details('Richard Sherman','D',1.9,4.56,1.61,2.65,0.81,0.97,4.33)#62.3%
+ahkello = player_details('Ahkello Witherspoon','D',1.9,4.45,1.53,2.57,0.84,1.03,4.13)#56.5%
+
+niners_defense = defense_details('San Francisco 49ers','red','white',n_bosa,warner,ward,sherman,ahkello)
 
 def choose_teams():
     offense_choice = input('Select offensive team: ')
@@ -158,7 +173,7 @@ def choose_teams():
     return(offense,offense_colour,defense,defense_colour)
     
 off_list = [browns_offense,jags_offense]
-def_list = [niners_defense]
+def_list = [rams_defense,niners_defense]
 
 def teams_list(side,teams_list):
     
